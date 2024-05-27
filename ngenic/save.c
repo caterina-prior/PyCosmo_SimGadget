@@ -1,5 +1,7 @@
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "allvars.h"
 #include "proto.h"
@@ -35,6 +37,7 @@ void write_particle_data(void)
     {
       if(ThisTask == (masterTask + groupTask))	/* ok, it's this processor's turn */
 	save_local_data();
+  save_local_data_to_csv();
 
       /* wait inside the group */
       MPI_Barrier(MPI_COMM_WORLD);
@@ -364,4 +367,46 @@ size_t my_fread(void *ptr, size_t size, size_t nmemb, FILE * stream)
       FatalError(778);
     }
   return nread;
+}
+
+
+
+void save_local_data_to_csv(void)
+{
+
+  int i, k;
+  char buf[256];  // Buffer to hold the filename
+
+  if (NumPart == 0)
+      return;
+
+  if (NTaskWithN > 1)
+      snprintf(buf, sizeof(buf), "%s/%s.%02d", OutputDir, FileBase, ThisTask);
+  else
+      snprintf(buf, sizeof(buf), "%s/%s", OutputDir, FileBase);
+
+
+  // Append the .csv extension
+  strcat(buf, ".csv");
+  FILE *file = fopen(buf, "w");
+
+  // Check if the file is opened successfully
+  if (!file) {
+    printf("Error. Can't write in file \n");
+    FatalError(10);
+  }
+
+
+
+  for (i = 0; i < NumPart; ++i) {
+    for (k = 0; k < 3; ++k)
+        fprintf(file, "%f, ", P[i].Pos[k]);
+    for (k = 0; k < 3; ++k)
+        fprintf(file, "%f, ", P[i].Vel[k]);
+    fprintf(file, "\n");
+  }
+
+ // Close the file stream
+  fclose(file);
+
 }
