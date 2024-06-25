@@ -54,11 +54,11 @@ https://wwwmpa.mpa-garching.mpg.de/gadget4/gadget4_manual.pdf
 The parameter file needs to specify the location where the generated initial conditions will be saved. In the example files, this is the folder `./ICs/`, which corresponds to the folder `SimGadget/ngenic/ICs/`. This folder must exist **before** running the code.
 
 ### Run the code 
-To run the code, the following command can be executed in the `SimGadget/ngenic/` :
+To run the code, the following command can be executed in the `SimGadget/ngenic/` folder:
 
 `./N-GenIC parameterfiles/lsf_32.param`
 
-This will generate $32^3$ particles. It runs the parameterfile that is stored in the `parameterfiles` folder and will save the generates data in the folder `SimGadget/ngenic/ICs/`. By default two initial condition files will be generated; The binary file `lsf_32` which is compatible with GADGET and `lsf_32.csv` which is a readable .csv file containing the particle positions and velocities. The file needs to be copied to the desired simulation folder of IPPL using the filename `Data.csv`. By specifying the folder that contains `Data.csv`, IPPL will run the simulation and save the results in the specified folder. 
+This will generate $32^3$ particles. It uses the parameter file `lsf_32.param` which is stored in the `parameterfiles` folder and will save the generated data in the folder `SimGadget/ngenic/ICs/`. By default two initial condition files will be generated; The binary file `lsf_32` which is compatible with GADGET and `lsf_32.csv` which is a readable .csv file containing the particle positions and velocities. The file needs to be copied to the desired simulation folder of IPPL using the filename `Data.csv`. By specifying the folder that contains `Data.csv`, IPPL will run the simulation and save the results in the specified folder. 
 
 The initial conditions can also be generated in parallel with the command:
 
@@ -86,7 +86,7 @@ The code can be compiled with:
 
 ### Setup Parameter file
 
-Similarly to the N-GenIC, the parameter file with all relevant physical and computational parameters needs to be set. When using initial conditions generated with N-GenIC several values **must match**. This is the `TimeBegin` (otherwise it is physically wrong), all the cosmological constants like the density parameters (Omega), Hubble parameters, BoxSize, and the system units. The example files are already set up to match their initial condition files. (The initial condition parameter files are specified in the Gadget parameter files). Also here, the Output directory of the results must be specified and exist **before** running the code. 
+Similarly to the N-GenIC, a parameter file with all relevant physical and computational parameters needs to be set. For simplicity, we use the same parameter file names for N-GenIC (saved in `SimGadget/ngenic/parameterfiles/`) and Gadget (saved in `SimGadget/Gadget2/parameterfiles/`). When using initial conditions generated with N-GenIC several values of the 2 parameter files **must match**. For example the starting time of the simulation, called `TimeBegin` (otherwise it is physically wrong), all the cosmological constants like the density parameters (`Omega`), Hubble parameters, `BoxSize`, and the system units. The example files are already set up to match their initial condition files. Also here, the output directory for the simulation specified in the Gadget parameter files must exist **before** running the code. 
 
 ### Run Simulation with Gadget
 
@@ -95,7 +95,7 @@ To run the code the following command can be executed in the folder `SimGadget/`
 `./Gadget2/Gadget2 Gadget2/parameterfiles/lsf_32.param`
 
 
-In this example file, it accesses the input file from the folder `ngenic/ICs/` with the name `lsf_32` and saves them in the folder `Results/lsf_32/`.
+In this example file, it accesses the input file from the folder `SimGadget/ngenic/ICs/` with the name `lsf_32` and saves the simulation results in the folder `SimGadget/Results/lsf_32/`.
 
 The code can also be executed in parallel with the command:
 
