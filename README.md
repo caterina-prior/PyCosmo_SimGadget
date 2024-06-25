@@ -58,13 +58,15 @@ To run the code, the following command can be executed.
 
 `./N-GenIC parameterfiles/lsf_32.param`
 
-This will generate $32^3$ particles. It runs the parameterfile that is stored in the `parameterfiles` folder and will save the generates data in the folder `./ICs/`. By default two initial condition files will be generated; The binary file `lsf_32` which is compatible with GADGET and `lsf_32.csv` which is a readable .csv file containing the particle positions and velocities compatible with the IPPL code. 
+This will generate $32^3$ particles. It runs the parameterfile that is stored in the `parameterfiles` folder and will save the generates data in the folder `./ICs/`. By default two initial condition files will be generated; The binary file `lsf_32` which is compatible with GADGET and `lsf_32.csv` which is a readable .csv file containing the particle positions and velocities. The file needs to be copied to the desired simulation folder of IPPL using the filename `Data.csv`. By specifying the folder that contains `Data.csv`, IPPL will run the simulation and save the results in the specified folder. 
 
 The initial conditions can also be generated in parallel with the command:
 
 `mpiexec -np 4 ./N-GenIC parameterfiles/lsf_32.param`
 
-This generates the initial conditions in parallel on 4 processors.
+This generates the initial conditions in parallel on 4 processors and saves them in 4 files with the names `lsf_32.00.csv, lsf_32.01.csv, lsf_32.02.csv, lsf_03.csv`. Those files can be combined and saved under the IPPL compatible name `Data.csv` using the following command:
+
+`cat lsf_32.*.csv > Data.csv`
 
 ## Simulations with GADGET
 
