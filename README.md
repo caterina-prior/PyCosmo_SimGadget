@@ -81,7 +81,10 @@ FFTW_LIBS= -L path/lib
 
 The code can be compiled with:
 
-`make`
+```
+cd Gadget2
+make
+```
 
 
 ### Setup Parameter file
