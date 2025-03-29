@@ -16,6 +16,11 @@ def main(param_file):
         print(f"Error: The file '{param_file_path}' does not exist!")
         return
 
+    print(f"Using parameter file: {param_file}")
+
+    # Logic to load and process the .param file
+    parameters = read_param_file(param_file_path)
+
     #
     #
     #
@@ -24,13 +29,6 @@ def main(param_file):
     #
     #
 
-    print(f"Using parameter file: {param_file}")
-
-    # Logic to load and process the .param file
-    parameters = read_param_file(param_file_path)
-
-    for key, value in parameters.items():
-        print(f"{key}: {value}")
 
 # Import variables defined in input_parameters.param
 if __name__ == "__main__":
@@ -69,6 +67,10 @@ def read_param_file(file_path):
         except Exception as e:
             print(f"Error reading file: {e}")
         
+        # Print key-value pairs in the params dictionary
+        for key, value in params.items():
+            print(f"{key}: {value}")
+
         return params
 
 
