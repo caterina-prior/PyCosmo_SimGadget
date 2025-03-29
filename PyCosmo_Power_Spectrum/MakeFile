@@ -1,6 +1,12 @@
 # Define the virtual environment directory
 VENV := venv
 
+# Define the folder where .param files are stored
+PARAM_FILE_DIR := ngenic/parameterfiles
+
+# Default parameter file (inside the 'params' folder)
+PARAM_FILE := $(PARAM_FILE_DIR)/lsf_32.param
+
 # Default target
 all: install run
 
