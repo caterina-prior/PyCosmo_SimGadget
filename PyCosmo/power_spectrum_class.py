@@ -24,11 +24,3 @@ def read_param_file(file_path):
         print(f"Error reading file: {e}")
     
     return params
-
-
-# Example usage
-if __name__ == "__main__":
-    param_file_path = "ngenic/parameterfiles/lsf_16.param"
-    parameters = read_param_file(param_file_path)
-    for key, value in parameters.items():
-        print(f"{key}: {value}")
