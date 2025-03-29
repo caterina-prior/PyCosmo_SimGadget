@@ -10,6 +10,13 @@ from Functions import pycosmowatermark
 
 from power_spectrum_class import PowerSpectrumClass
 
+import argparse
+
+def main(param_file):
+    # Your simulation code here
+    print(f"Using parameter file: {param_file}")
+    # Add logic to load and process the .param file
+
 # Import variables defined in input_parameters.param
 if __name__ == "__main__":
     param_file_path = "ngenic/parameterfiles/lsf_16.param"
