@@ -1,18 +1,7 @@
-import PyCosmo
-import numpy as np
-
-import matplotlib
-import matplotlib.pyplot as plt
-plt.style.use("pycosmohub")
-
-from Functions.extra_functions import deltanorm
-from Functions import pycosmowatermark
+import argparse
+import os
 
 from power_spectrum_class import PowerSpectrumClass
-
-import argparse
-
-import os
 
 def main(param_file):
     """
@@ -27,19 +16,24 @@ def main(param_file):
         print(f"Error: The file '{param_file_path}' does not exist!")
         return
 
-    # Your simulation code here
+    #
+    #
+    #
+    # SIMULATION CODE HERE
+    #
+    #
+    #
 
     print(f"Using parameter file: {param_file}")
 
     # Logic to load and process the .param file
     parameters = read_param_file(param_file_path)
+
     for key, value in parameters.items():
         print(f"{key}: {value}")
 
 # Import variables defined in input_parameters.param
 if __name__ == "__main__":
-    
-
     parser = argparse.ArgumentParser(description="Run the simulation with a specified parameter file.")
     parser.add_argument(
         'param_file',
@@ -49,6 +43,33 @@ if __name__ == "__main__":
     args = parser.parse_args()
     main(args.param_file)
 
-# PyCosmo instance
-cosmo = PyCosmo.build()
+
+def read_param_file(file_path):
+        """
+        Reads a parameter file and extracts key-value pairs.
+
+        :param file_path: Path to the parameter file
+        :return: Dictionary containing parameter key-value pairs
+        """
+        params = {}
+        try:
+            with open(file_path, 'r') as file:
+                for line in file:
+                    # Skip comments and empty lines
+                    line = line.strip()
+                    if not line or line.startswith('#'):
+                        continue
+                    
+                    # Split key and value
+                    if '=' in line:
+                        key, value = line.split('=', 1)
+                        params[key.strip()] = value.strip()
+        except FileNotFoundError:
+            print(f"Error: File not found at {file_path}")
+        except Exception as e:
+            print(f"Error reading file: {e}")
+        
+        return params
+
+
 
