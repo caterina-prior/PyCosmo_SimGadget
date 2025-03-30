@@ -1,5 +1,6 @@
-python=3.9.13
-numpy=1.21
+numpy>=1.20.3
 urllib3==1.26.9 
 chardet==5.1.0 
 charset_normalizer==2.0.12
+pycosmo==2.2.0
+

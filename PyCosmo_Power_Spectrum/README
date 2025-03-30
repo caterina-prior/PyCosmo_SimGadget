@@ -1,5 +1,0 @@
-To run the simulation with a custom .param file, use the following command:​
-
-`make PARAM_FILE=custom.param run`
-
-If no PARAM_FILE is specified, make will use default.param as defined in the Makefile

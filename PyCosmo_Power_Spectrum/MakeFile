@@ -5,16 +5,16 @@ VENV := venv
 PARAM_FILE_DIR := ngenic/parameterfiles
 
 # Default parameter file (inside the 'params' folder)
-PARAM_FILE := $(PARAM_FILE_DIR)/lsf_32.param
+PARAM_FILE := lsf_32.param
 
 # Default target
 all: install run
 
-# Create a virtual environment
+# Create a virtual environment with Python 3.9
 venv:
-	@echo "Setting up virtual environment..."
+	@echo "Setting up virtual environment with Python 3.9..."
 	@if [ ! -d "$(VENV)" ]; then \
-		python3 -m venv $(VENV); \
+		python3.9 -m venv $(VENV); \
 	fi
 
 # Install dependencies from requirements.txt
@@ -23,7 +23,7 @@ install: venv
 
 # Run the main script
 run:
-	$(VENV)/bin/python custom_power_spectrum.py
+	$(VENV)/bin/python custom_power_spectrum.py $(PARAM_FILE)
 
 # Run tests
 test:
