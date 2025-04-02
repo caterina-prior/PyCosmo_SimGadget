@@ -41,7 +41,7 @@ def main(param_file):
     :param param_file: Path to the parameter file
     """
     # Get the relative path to the .param file
-    param_file_path = os.path.join("../ngenic/parameterfiles", param_file)
+    param_file_path = os.path.join("parameter_files", param_file)
     
     # Check if the file exists
     if not os.path.isfile(param_file_path):

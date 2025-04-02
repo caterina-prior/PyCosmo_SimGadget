@@ -2,10 +2,10 @@
 VENV := venv
 
 # Define the folder where .param files are stored
-PARAM_FILE_DIR := ngenic/parameterfiles
+PARAM_FILE_DIR := PyCosmo_Power_Spectrum/input_parameters
 
 # Default parameter file (inside the 'params' folder)
-PARAM_FILE := lsf_32.param
+PARAM_FILE := pycosmo_input_32.param
 
 # Default target
 all: install run
