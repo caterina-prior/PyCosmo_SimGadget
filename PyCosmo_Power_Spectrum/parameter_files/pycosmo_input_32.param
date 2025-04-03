@@ -1,8 +1,3 @@
-
-Nmesh            32       % This is the size of the FFT grid used to 
-                           % compute the displacement field. One
-                           % should have Nmesh >= Nsample.
-
 Nsample          32       % sets the maximum k that the code uses,
                            % i.e. this effectively determines the
                            % Nyquist frequency that the code assumes,
@@ -14,16 +9,6 @@ Nsample          32       % sets the maximum k that the code uses,
 
 Box              50000 % 7812.5   Periodic box size of simulation
 
-FileBase         lsf_32                % Base-filename of output files
-OutputDir        ./ICs/              % Directory for output
-
-GlassFile        dummy_glass.dat  % File with unperturbed glass or
-                                  % Cartesian grid
-
-TileFac          2                % Number of times the glass file is
-                                  % tiled in each dimension (must be
-                                  % an integer)
-
 
 Omega            0.3       % Total matter density  (at z=0)
 OmegaLambda      0.7       % Cosmological constant (at z=0)
@@ -34,22 +19,15 @@ Redshift         63        % Starting redshift
 
 Sigma8           0.9       % power spectrum normalization
 
+LinearFittingFunction        0    % "0" selects Eisenstein & Hu, 1998, ApJ, 511, 5
+		                          % "2" selects BBKS as summarized by Peacock, 1997, MNRAS, 284, 885
 
+NonLinearFittingFunction     0    % "0" selects "halofit" from Smith et al., 2003, MNRAS, 341, 1311
+                                  % "1" selects "rev_halofit" from revision by Takahashi et al., 2012,
+                                  % ApJ, 761, 152
+                                  % "2" selects "mead" incorporates the implementation of the as 
+                                  % described in Mead et al. 2015 and Mead et al. 2016
 
-SphereMode       1         % if "1" only modes with |k| < k_Nyquist are
-                           % used (i.e. a sphere in k-space), otherwise modes with
-                           % |k_x|,|k_y|,|k_z| < k_Nyquist are used
-                           % (i.e. a cube in k-space)
-          
-
-WhichSpectrum    0         % "1" selects Eisenstein & Hu spectrum,
-		           % "2" selects a tabulated power spectrum in
-                           % the file 'FileWithInputSpectrum'
-                           % otherwise, Efstathiou parametrization is used
-
-
-FileWithInputSpectrum   input_spectrum.txt  % filename of tabulated input
-                                            % spectrum (if used)
 InputSpectrum_UnitLength_in_cm  3.085678e24 % defines length unit of tabulated
                                             % input spectrum in cm/h. 
                                             % Note: This can be chosen different from UnitLength_in_cm
@@ -63,17 +41,10 @@ ReNormalizeInputSpectrum   1                % if set to zero, the
                                             % based on the specified sigma8
 
 
-ShapeGamma       0.21      % only needed for Efstathiou power spectrum 
-PrimordialIndex  1.0       % may be used to tilt the primordial index, 
-                           % primordial spectrum is k^PrimordialIndex
-
-		  
 Seed             123456    %  seed for IC-generator
-
 
 NumFilesWrittenInParallel 1  % limits the number of files that are
                              % written in parallel when outputting
-
 
 UnitLength_in_cm          3.085678e21   % defines length unit of output (in cm/h) 
 UnitMass_in_g             1.989e43      % defines mass unit of output (in g/cm)
