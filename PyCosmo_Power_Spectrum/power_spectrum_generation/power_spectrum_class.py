@@ -3,6 +3,7 @@ import numpy as np
 
 import matplotlib
 import matplotlib.pyplot as plt
+
 plt.style.use("pycosmohub.mplstyle")
 
 from Functions.extra_functions import deltanorm

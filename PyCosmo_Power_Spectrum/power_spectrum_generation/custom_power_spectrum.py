@@ -1,7 +1,7 @@
 import argparse
 import os
 
-from power_spectrum_class import PowerSpectrumClass
+from PyCosmo_Power_Spectrum.power_spectrum_generation.power_spectrum_class import PowerSpectrumClass
 
 def read_param_file(file_path):
         """
