@@ -1,6 +1,6 @@
 import unittest
-from PyCosmo_Power_Spectrum import power_spectrum_class
-from power_spectrum_class import PowerSpectrumClass
+
+from PyCosmo_Power_Spectrum.power_spectrum_class import PowerSpectrumClass
 
 import matplotlib.pyplot as plt
 
