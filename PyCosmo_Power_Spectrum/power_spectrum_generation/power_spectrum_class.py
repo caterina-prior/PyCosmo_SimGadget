@@ -4,11 +4,10 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
-plt.style.use("pycosmohub.mplstyle")
+plt.style.use("plotting/pycosmohub.mplstyle")
 
 from Functions.extra_functions import deltanorm
 from Functions import pycosmowatermark
-
 
 class PowerSpectrumClass:
    
@@ -19,7 +18,7 @@ class PowerSpectrumClass:
         :param param_file: dictionary containing cosmological parameters
         """
         self.param_dictionary = parameters # Store the parameter as a dictionary
-        self.cosmo = self.build_pycosmo() # Initialize the PyCosmo object
+        self.cosmo = PyCosmo.build() # Initialize the PyCosmo object
         
         self.box_size = parameters["Box"]  # Get the periodic box size of the simulation
         self.Nsample = parameters["Nsample"] # Get the number of samples in the simulation

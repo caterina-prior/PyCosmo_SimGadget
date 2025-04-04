@@ -17,17 +17,42 @@ venv:
 		python3.9 -m venv $(VENV); \
 	fi
 
+
+# Get the absolute path of the repository root
+ROOT_DIR := $(shell pwd)
+
+# Set PYTHONPATH dynamically
+export PYTHONPATH := $(ROOT_DIR)
+
+# Virtual environment directory
+VENV_DIR := venv
+
 # Install dependencies from requirements.txt
 install: venv
 	$(VENV)/bin/pip install -r requirements.txt
+	PYTHONPATH=$(PYTHONPATH) $(VENV_DIR)/bin/python -m pytest tests/
 
-# Run the main script
-run:
-	$(VENV)/bin/python custom_power_spectrum.py $(PARAM_FILE)
+# Install Cython and build tools
+install_deps:
+	$(VENV_DIR)/bin/pip install cython
+	sudo apt-get install build-essential
+
+# Rebuild PyCosmo with setup.py
+rebuild_cosmo:
+	$(VENV_DIR)/bin/python setup.py build_ext --inplace
+
+# Clear the sympy2c cache
+clear_cache:
+	rm -rf /home/kitty/_cache/sympy2c/
 
 # Run tests
 test:
 	$(VENV)/bin/pytest tests/
+
+# Run the main script
+run:
+	PYTHONPATH=$(PYTHONPATH) $(VENV)/bin/python power_spectrum_generation/custom_power_spectrum.py $(PARAM_FILE)
+
 
 # Clean up virtual environment and compiled Python files
 clean:
