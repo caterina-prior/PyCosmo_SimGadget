@@ -12,7 +12,7 @@ CACHE_DIR := $(HOME)/_cache/sympy2c
 
 # Compiler flags for GSL
 CFLAGS += -I/usr/include/gsl
-LDFLAGS += -L/usr/lib -lgsl -lgslcblas -lm
+LDFLAGS += -L/usr/lib/x86_64-linux-gnu -lgsl -lgslcblas -lm
 
 # Get the absolute path of the repository root
 ROOT_DIR := $(shell pwd)
@@ -20,6 +20,8 @@ ROOT_DIR := $(shell pwd)
 # Export build and runtime environment variables
 export CFLAGS LDFLAGS
 export PYTHONPATH := $(ROOT_DIR)
+export CC := gcc
+export CXX := g++
 
 # === Targets ===
 
