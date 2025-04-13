@@ -34,7 +34,6 @@ def read_param_file(file_path):
 
         return params
 
-
 def main(param_file):
     """
     Main function to run the simulation with the specified parameter file.

@@ -37,14 +37,27 @@ class PowerSpectrumClass:
         self.kmin = 2 * np.pi / self.box_size # Calculate the minimum k value
         self.k_count = int(self.Nsample / 2)
         self.k_values = np.linspace(np.log10(self.kmin), np.log10(self.nyquist), self.k_count)
+
+        # Set the type of lienar fitting function
+        if parameters["LinearFittingFunction"] == 0:
+            self.cosmo.set(pk_type="EH") # Set the linear fitting function to Eisenstein & Hu
+        else:
+            self.cosmo.set(pk_type="BBKS") # Set the linear fitting function to BBKS
+
+        # Set the type of non-linear fitting function
+        if parameters["NonLinearFitingFunction"] == 0:
+            self.cosmo.set(pk_nonlin_type="halofit")
+        elif parameters["NonLinearFitingFunction"] == 1:
+            self.cosmo.set(pk_nonlin_type="rev_halofit")
+        else:
+            self.cosmo.set(pk_nonlin_type="mead")
+
         self.cosmo.set(omega_m=parameters["Omega"], # Set the matter density parameter
                        omega_l=parameters["OmegaLambda"], # Set the dark energy density parameter
                        omega_b=parameters["OmegaB"], # Set the baryon density parameter
                        h=parameters["HubbleParam"], # Set the Hubble parameter
                        pk_norm_type="sigma8", # Set the normalization type to use sigma 8
                        pk_norm=parameters["Sigma8"], # Set the amplitude of the power spectrum
-                       pk_nonlin_type=parameters["NonLinearFitingFunction"], # Set the non-linear fitting function
-                       pk_type=parameters["LinearFitingFunction"], # Set the linear fitting function
                        )
 
         self.unitlength_in_cm = parameters["UnitLength_in_cm"] # Get the unit length in cm
