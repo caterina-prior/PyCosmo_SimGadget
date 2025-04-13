@@ -37,7 +37,6 @@ class PowerSpectrumClass:
         self.kmin = 2 * np.pi / self.box_size # Calculate the minimum k value
         self.k_count = int(self.Nsample / 2)
         self.k_values = np.linspace(np.log10(self.kmin), np.log10(self.nyquist), self.k_count)
-        print(self.cosmo.set())
         self.cosmo.set(omega_m=parameters["Omega"], # Set the matter density parameter
                        omega_l=parameters["OmegaLambda"], # Set the dark energy density parameter
                        omega_b=parameters["OmegaB"], # Set the baryon density parameter
