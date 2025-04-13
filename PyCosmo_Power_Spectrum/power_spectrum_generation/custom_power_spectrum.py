@@ -1,5 +1,11 @@
 import argparse
 import os
+import sys
+
+# Set up relative imports
+current_file_path = os.path.abspath(__file__)
+base_dir = os.path.dirname(os.path.dirname(current_file_path))
+sys.path.insert(0, base_dir)
 
 from power_spectrum_generation.power_spectrum_class import PowerSpectrumClass
 
@@ -34,6 +40,22 @@ def read_param_file(file_path):
 
         return params
 
+
+def run_spectrum_generation(parameters):
+    """
+    Function to run the actual simulation using the parameters.
+    
+    :param parameters: Dictionary containing simulation parameters
+    """
+    # Initialize the PowerSpectrumClass with the parameters
+    power_spectrum = PowerSpectrumClass(parameters)
+
+    # Compute the power spectrum
+    power_spectrum.compute_power_spectrum()
+
+    # Output the plots of the results
+    power_spectrum.plot_results()
+
 def main(param_file):
     """
     Main function to run the simulation with the specified parameter file.
@@ -52,11 +74,8 @@ def main(param_file):
     # Logic to load and process the .param file
     parameters = read_param_file(param_file_path)
 
-    #
-    # Initialize the PowerSpectrumClass with the parameter file
-    #
-    #
-
+    # Run the simulation with the loaded parameters
+    run_spectrum_generation(parameters)
 
 # Import variables defined in input_parameters.param
 if __name__ == "__main__":

@@ -90,6 +90,7 @@ install_deps: venv
 		echo "Detected apt-based system (Debian/Ubuntu/WSL). Installing GSL and build tools..."; \
 		sudo apt-get update; \
 		sudo apt-get install -y build-essential libgsl-dev autoconf automake libtool; \
+		sudo apt-get install -y texlive-latex-base texlive-fonts-recommended dvipng cm-super; \
 	elif [ -x "$$(command -v brew)" ]; then \
 		echo "Detected macOS with Homebrew. Installing GSL..."; \
 		brew install gsl; \

@@ -19,8 +19,8 @@ Redshift         63        % Starting redshift
 
 Sigma8           0.9       % power spectrum normalization
 
-LinearFittingFunction        0    % "0" selects Eisenstein & Hu, 1998, ApJ, 511, 5
-		                          % "2" selects BBKS as summarized by Peacock, 1997, MNRAS, 284, 885
+LinearFittingFunction        0    % "0" selects "EH"; Eisenstein & Hu, 1998, ApJ, 511, 5
+		                          % "2" selects "BBKS"; as summarized by Peacock, 1997, MNRAS, 284, 885
 
 NonLinearFittingFunction     0    % "0" selects "halofit" from Smith et al., 2003, MNRAS, 341, 1311
                                   % "1" selects "rev_halofit" from revision by Takahashi et al., 2012,
