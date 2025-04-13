@@ -1,13 +1,19 @@
+import os, sys
 import PyCosmo
 import numpy as np
-
 import matplotlib
 import matplotlib.pyplot as plt
 
-plt.style.use("plotting/pycosmohub.mplstyle")
+# Set up relative imports
+current_file_path = os.path.abspath(__file__)
+base_dir = os.path.dirname(os.path.dirname(current_file_path))
+sys.path.insert(0, base_dir)
 
+# Import custom modules
 from Functions.extra_functions import deltanorm
-from Functions import pycosmowatermark
+
+# Use matplotlib style
+plt.style.use("plotting/pycosmohub.mplstyle")
 
 class PowerSpectrumClass:
    
@@ -17,6 +23,7 @@ class PowerSpectrumClass:
         
         :param param_file: dictionary containing cosmological parameters
         """
+        
         self.param_dictionary = parameters # Store the parameter as a dictionary
         self.cosmo = PyCosmo.build() # Initialize the PyCosmo object
         
@@ -28,13 +35,15 @@ class PowerSpectrumClass:
         # Calculate and store the appropriate range of k values to use in the simulation 
         self.nyquist = (2 * np.pi / self.box_size) * (self.Nsample / 2) # Calculate the Nyquist frequency
         self.kmin = 2 * np.pi / self.box_size # Calculate the minimum k value
-        self.k_values = np.linspace(np.log10(self.kmin), np.log10(self.nyquist), self.Nsample/2) # Store range of k values as a log scale
-
+        self.k_count = int(self.Nsample / 2)
+        self.k_values = np.linspace(np.log10(self.kmin), np.log10(self.nyquist), self.k_count)
+        print(self.cosmo.set())
         self.cosmo.set(omega_m=parameters["Omega"], # Set the matter density parameter
-                       omega_lambda=parameters["OmegaLambda"], # Set the dark energy density parameter
+                       omega_l=parameters["OmegaLambda"], # Set the dark energy density parameter
                        omega_b=parameters["OmegaB"], # Set the baryon density parameter
                        h=parameters["HubbleParam"], # Set the Hubble parameter
-                       sigma_8=parameters["Sigma8"], # Set the amplitude of the power spectrum
+                       pk_norm_type="sigma8", # Set the normalization type to use sigma 8
+                       pk_norm=parameters["Sigma8"], # Set the amplitude of the power spectrum
                        pk_nonlin_type=parameters["NonLinearFitingFunction"], # Set the non-linear fitting function
                        pk_type=parameters["LinearFitingFunction"], # Set the linear fitting function
                        )
@@ -66,17 +75,21 @@ class PowerSpectrumClass:
         plt.figure(figsize=(15.5, 5.5))
 
         ax = plt.gca()
-        ax.loglog(self.k_values, self.pk_lin, color='dodgerblue', linewidth = 2, label = 'linear')
-        ax.loglog(self.k_values, self.pk_nonlin, color='magenta', linewidth = 2, label = 'non-linear')
+        ax.loglog(self.k_values, self.pk_lin, color='dodgerblue', linewidth=2, label='linear')
+        ax.loglog(self.k_values, self.pk_nonlin, color='magenta', linewidth=2, label='non-linear')
         ax.set_xlabel(r'$k \ [Mpc^{-1}]$', fontsize=28)
         ax.set_ylabel(r'$P(k) \ [Mpc^{3}]$', fontsize=28)
-        ax.text(150, 1100, 'z = {:.2f}'.format(self.z_start), fontsize=28, color='black')
+
+        # Dynamically determine location for the text label
+        x_text = self.k_values[-1]  # e.g., 0.3
+        y_text = self.pk_nonlin[-1]  # e.g., 9
+        ax.text(x_text, y_text, f'z = {self.z_start:.2f}', fontsize=28, color='black')
+
         for tick in ax.xaxis.get_major_ticks():
             tick.label.set_fontsize(24) 
             tick.label.set_fontweight('black')
         for tick in ax.yaxis.get_major_ticks():
             tick.label.set_fontsize(24) 
             tick.label.set_fontweight('black')
-        plt.legend(loc='best')
 
-        
+        plt.legend(loc='best')

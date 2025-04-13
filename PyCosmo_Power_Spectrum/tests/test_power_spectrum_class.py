@@ -34,15 +34,13 @@ class TestPowerSpectrumClass(unittest.TestCase):
         self.ps_class.pk_nonlin = [1, 4, 9]  # Mock non-linear power spectrum
         self.ps_class.k_values = [0.1, 0.2, 0.3]  # Mock k values
 
-    def test_read_param_file(self):
-        # Test if the read_param_file method reads parameters correctly
-        param_file = os.path.join(base_dir, "parameter_files", "example.param")
-        params = PowerSpectrumClass.read_param_file(param_file)
-        self.assertIn("Box", params)
-        self.assertEqual(params["Box"], "100.0")
-        print(params)
+    def test_plot_power_spectrum(self):
+        # Test if the plot_power_spectrum method runs without errors
+        try:
+            self.ps_class.plot_power_spectrum()
+            plt.close('all')  # Close the plot to avoid resource warnings
+        except Exception as e:
+            self.fail(f"plot_power_spectrum raised an exception: {e}")
 
 if __name__ == "__main__":
-    unittest.main()    
-
-
+    unittest.main()

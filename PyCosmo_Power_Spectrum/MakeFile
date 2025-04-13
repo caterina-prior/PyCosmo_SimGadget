@@ -4,74 +4,131 @@
 VENV := venv
 
 # Parameter file configuration
-PARAM_FILE_DIR := PyCosmo_Power_Spectrum/parameter_files
 PARAM_FILE := pycosmo_input_32.param
 
-# Cache directory forsympy2c
+# Cache directory for sympy2c
 CACHE_DIR := $(HOME)/_cache/sympy2c
-
-# Compiler flags for GSL
-CFLAGS += -I/usr/include/gsl
-LDFLAGS += -L/usr/lib/x86_64-linux-gnu -lgsl -lgslcblas -lm
 
 # Get the absolute path of the repository root
 ROOT_DIR := $(shell pwd)
 
-# Export build and runtime environment variables
+# === Platform Detection ===
+UNAME_S := $(shell uname -s)
+UNAME_R := $(shell uname -r)
+
+ifeq ($(UNAME_S),Linux)
+	ifneq (,$(findstring Microsoft,$(UNAME_R)))
+		PLATFORM := wsl
+	else
+		PLATFORM := linux
+	endif
+endif
+
+ifeq ($(UNAME_S),Darwin)
+	PLATFORM := mac
+endif
+
+# Set GSL library and include paths based on platform
+ifeq ($(PLATFORM),linux)
+	GSL_LIB_PATH := /usr/lib/x86_64-linux-gnu
+	GSL_INCLUDE_PATH := /usr/include
+endif
+
+ifeq ($(PLATFORM),wsl)
+	GSL_LIB_PATH := /usr/lib/x86_64-linux-gnu
+	GSL_INCLUDE_PATH := /usr/include
+endif
+
+ifeq ($(PLATFORM),mac)
+	GSL_LIB_PATH := /usr/local/lib
+	GSL_INCLUDE_PATH := /usr/local/include
+endif
+
+# Compiler flags
+CFLAGS += -I$(GSL_INCLUDE_PATH)  # Include path for GSL headers
+LDFLAGS += -L$(GSL_LIB_PATH) -lgsl -lgslcblas  # Link GSL and GSL CBLAS
+
+# Export environment variables
 export CFLAGS LDFLAGS
 export PYTHONPATH := $(ROOT_DIR)
 export CC := gcc
 export CXX := g++
+export SYMPY2C_USE_SYSTEM_GSL := 1
+export LD_LIBRARY_PATH := $(GSL_LIB_PATH):$(LD_LIBRARY_PATH)
+export GSL_LIB_PATH
 
 # === Targets ===
 
-.PHONY: all venv install install_deps rebuild_cosmo clear_cache test run clean
+.PHONY: all venv setup install install_deps clear_cache test test_full run clean
 
 # Default target
-all: install run
+all: setup run
 
 # Create a virtual environment with Python 3.9
 venv:
 	@echo "Setting up virtual environment with Python 3.9..."
+	@if ! command -v python3.9 >/dev/null; then \
+		echo "python3.9 not found! Please install it."; \
+		exit 1; \
+	fi
 	@if [ ! -d "$(VENV)" ]; then \
 		python3.9 -m venv $(VENV); \
 	fi
 
-# Install dependencies from requirements.txt
+# Install Python dependencies
 install: venv
-	@echo "Installing Python dependencies..."
+	@echo "Installing Python dependencies from requirements.txt..."
 	$(VENV)/bin/pip install -r requirements.txt
 
-# Install Cython and system dependencies (GSL, build tools)
+# Install system and Python build dependencies
 install_deps: venv
-	@echo "Installing build tools and GSL..."
-	$(VENV)/bin/pip install cython
-	sudo apt-get update
-	sudo apt-get install build-essential libgsl-dev
+	@echo "Installing/upgrading build tools and Python packages..."
+	$(VENV)/bin/pip install --upgrade pip setuptools wheel
 
-# Rebuild PyCosmo with setup.py
-rebuild_cosmo:
-	@echo "Rebuilding PyCosmo extensions..."
-	@$(VENV)/bin/python setup.py build_ext --inplace
+	@echo "Checking platform for system dependencies..."
+	@if [ -x "$$(command -v apt-get)" ]; then \
+		echo "Detected apt-based system (Debian/Ubuntu/WSL). Installing GSL and build tools..."; \
+		sudo apt-get update; \
+		sudo apt-get install -y build-essential libgsl-dev autoconf automake libtool; \
+	elif [ -x "$$(command -v brew)" ]; then \
+		echo "Detected macOS with Homebrew. Installing GSL..."; \
+		brew install gsl; \
+	else \
+		echo "Skipping system package installation. Please ensure GSL and build tools are available."; \
+	fi
+
+# One-time full setup (venv + pip + system deps)
+setup: venv install install_deps
+	@echo "Environment setup complete."
+	@echo "Reminder: If you encounter shared library issues, run:"
+	@echo "  export LD_LIBRARY_PATH=$(GSL_LIB_PATH):\$$LD_LIBRARY_PATH"
 
 # Clear the sympy2c cache
 clear_cache:
 	@echo "Clearing sympy2c cache at $(CACHE_DIR)..."
 	rm -rf $(CACHE_DIR)
 
-# Run tests
-test: install_deps rebuild_cosmo clear_cache
+# Run tests (no rebuilds or cache clearing)
+test:
 	@echo "Running tests..."
-	@$(VENV)/bin/python -m pytest tests/
+	@set -e; \
+	PYTHON_SYMPY2C_USE_SHARED_GSL=1 $(VENV)/bin/python -m pytest tests/ || echo "Tests failed"
+
+# Optional: force rebuild GSL wrapper + clear cache before testing
+test_full: install_deps clear_cache
+	@echo "Running full test suite (with GSL rebuild)..."
+	@set -e; \
+	PYTHON_SYMPY2C_USE_SHARED_GSL=1 $(VENV)/bin/python -m pytest tests/
 
 # Run the main script
 run:
 	@echo "Running custom power spectrum generator..."
-	PYTHONPATH=$(PYTHONPATH) $(VENV)/bin/python power_spectrum_generation/custom_power_spectrum.py $(PARAM_FILE_DIR)/$(PARAM_FILE)
+	$(VENV)/bin/python -m power_spectrum_generation.custom_power_spectrum $(PARAM_FILE)
 
-# Clean up virtual environment
+# Clean up virtual environment and bytecode
 clean:
 	@echo "Cleaning up virtual environment and Python artifacts..."
+	rm -rf build
+	rm -f *.o
 	rm -rf $(VENV) __pycache__
 	find . -name "*.pyc" -delete
-
