@@ -51,10 +51,10 @@ def run_spectrum_generation(parameters):
     power_spectrum = PowerSpectrumClass(parameters)
 
     # Compute the power spectrum
-    power_spectrum.compute_power_spectrum()
+    power_spectrum.compute_power_spectra()
 
     # Output the plots of the results
-    power_spectrum.plot_results()
+    power_spectrum.plot_power_spectrum()
 
 def main(param_file):
     """

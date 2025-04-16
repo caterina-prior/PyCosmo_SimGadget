@@ -1,4 +1,4 @@
-Nsample          32       % sets the maximum k that the code uses,
+Nsample          512       % sets the maximum k that the code uses,
                            % i.e. this effectively determines the
                            % Nyquist frequency that the code assumes,
                            % k_Nyquist = 2*PI/Box * Nsample/2
