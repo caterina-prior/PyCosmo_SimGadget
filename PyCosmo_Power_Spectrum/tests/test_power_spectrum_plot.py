@@ -23,7 +23,7 @@ class TestPowerSpectrumClass(unittest.TestCase):
             "OmegaBaryon": 0.05,
             "HubbleParam": 0.7,
             "Sigma8": 0.8,
-            "NonLinearFitingFunction": 0,
+            "NonLinearFittingFunction": 0,
             "LinearFittingFunction": 0,
             "UnitLength_in_cm": 3.085677581e24,
             "UnitMass_in_g": 1.989e43,
