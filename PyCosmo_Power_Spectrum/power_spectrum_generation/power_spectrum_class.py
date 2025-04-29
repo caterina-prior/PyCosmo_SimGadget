@@ -29,10 +29,10 @@ class PowerSpectrumClass:
         self.box_size = float(parameters["Box"])  # Get the periodic box size of the simulation
         self.Nsample = int(parameters["Nsample"]) # Get the number of samples in the simulation
 
-        self.z_start = 1 # float(parameters["Redshift"]) # Get the starting redshift
+        self.z_start = float(parameters["Redshift"]) # Get the starting redshift
 
         # Calculate and store the appropriate range of k values to use in the simulation 
-        self.nyquist = 100 # float((2 * np.pi / self.box_size) * (self.Nsample / 2)) Calculate the Nyquist frequency
+        self.nyquist = 100 # float((2 * np.pi / self.box_size) * (self.Nsample / 2)) # Calculate the Nyquist frequency
         self.kmin = float(2 * np.pi / self.box_size) # Calculate the minimum k value
         self.k_count = int(self.Nsample)
         self.k_values = np.linspace(self.kmin, self.nyquist, self.k_count)
@@ -72,7 +72,7 @@ class PowerSpectrumClass:
         # Compute the linear and non-linear power spectra 
         self.pk_nonlin = self.cosmo.nonlin_pert.powerspec_a_k(1./(1+self.z_start), self.k_values)[:,0]
         self.pk_lin = self.cosmo.lin_pert.powerspec_a_k(1./(1+self.z_start), self.k_values)[:,0]
-        print(self.pk_nonlin)
+ 
     def plot_power_spectrum(self):
         """
         Plot the power spectrum.
@@ -96,6 +96,12 @@ class PowerSpectrumClass:
 
         for tick in ax.yaxis.get_major_ticks():
             tick.label1.set_fontweight('bold')
+
+        # Add a text box to the graph displaying the redshift
+        textstr = f'Redshift: z = {self.z_start:.2f}'
+        props = dict(boxstyle='round', facecolor='white', alpha=0.8)
+        ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=18,
+            verticalalignment='top', bbox=props)
 
         plt.legend(loc='best')
 
