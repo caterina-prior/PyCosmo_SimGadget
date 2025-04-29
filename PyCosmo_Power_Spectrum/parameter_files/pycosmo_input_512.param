@@ -19,8 +19,9 @@ Redshift         63        % Starting redshift
 
 Sigma8           0.9       % power spectrum normalization
 
-LinearFittingFunction        1    % "0" selects "EH"; Eisenstein & Hu, 1998, ApJ, 511, 5
+LinearFittingFunction        3    % "0" selects "EH"; Eisenstein & Hu, 1998, ApJ, 511, 5
 		                          % "1" selects "BBKS"; as summarized by Peacock, 1997, MNRAS, 284, 885
+                                  % "3" selects "Boltz"; a boltzmann solver method
 
 NonLinearFittingFunction     2    % "0" selects "halofit" from Smith et al., 2003, MNRAS, 341, 1311
                                   % "1" selects "rev_halofit" from revision by Takahashi et al., 2012,

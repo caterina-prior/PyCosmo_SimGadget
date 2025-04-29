@@ -40,8 +40,10 @@ class PowerSpectrumClass:
         # Set the type of linear fitting function
         if parameters["LinearFittingFunction"] == 0:
             self.cosmo.set(pk_type="EH") # Set the linear fitting function to Eisenstein & Hu
-        else:
+        elif parameters["LinearFittingFunction"] == 1:
             self.cosmo.set(pk_type="BBKS") # Set the linear fitting function to BBKS
+        else:
+            self.cosmo.set(pk_type="boltz")
 
         # Set the type of non-linear fitting function
         if parameters["NonLinearFittingFunction"] == 0:
@@ -71,6 +73,7 @@ class PowerSpectrumClass:
         Compute the power spectrum using the specified fitting functions."""
         # Compute the linear and non-linear power spectra 
         self.pk_nonlin = self.cosmo.nonlin_pert.powerspec_a_k(1./(1+self.z_start), self.k_values)[:,0]
+        print("NONLINEAR POWER SPECTRUM DONE")
         self.pk_lin = self.cosmo.lin_pert.powerspec_a_k(1./(1+self.z_start), self.k_values)[:,0]
  
     def plot_power_spectrum(self):
