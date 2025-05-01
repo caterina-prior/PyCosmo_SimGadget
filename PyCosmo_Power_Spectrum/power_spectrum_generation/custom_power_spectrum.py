@@ -56,6 +56,9 @@ def run_spectrum_generation(parameters):
     # Output the plots of the results
     power_spectrum.plot_power_spectrum()
 
+    # Save the power spectrum in N-GenIC-compatible format
+    power_spectrum.save_power_spectrum_for_ngenic()
+
 def main(param_file):
     """
     Main function to run the simulation with the specified parameter file.

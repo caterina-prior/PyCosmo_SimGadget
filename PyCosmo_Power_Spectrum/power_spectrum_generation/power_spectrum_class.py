@@ -1,7 +1,7 @@
 import os, sys
 import PyCosmo
 import numpy as np
-import matplotlib
+# Removed unused import: matplotlib
 import matplotlib.pyplot as plt
 
 # Set up relative imports
@@ -10,7 +10,7 @@ base_dir = os.path.dirname(os.path.dirname(current_file_path))
 sys.path.insert(0, base_dir)
 
 # Import custom modules
-from Functions.extra_functions import deltanorm
+# Removed unused import: deltanorm
 
 # Use matplotlib style
 plt.style.use("plotting/pycosmohub.mplstyle")
@@ -32,9 +32,12 @@ class PowerSpectrumClass:
         self.z_start = float(parameters["Redshift"]) # Get the starting redshift
 
         # Calculate and store the appropriate range of k values to use in the simulation 
-        self.nyquist = 100 # float((2 * np.pi / self.box_size) * (self.Nsample / 2)) # Calculate the Nyquist frequency
+        self.nyquist = float((2 * np.pi / self.box_size) * (self.Nsample / 2)) # Calculate the Nyquist frequency
         self.kmin = float(2 * np.pi / self.box_size) # Calculate the minimum k value
         self.k_count = int(self.Nsample)
+        # Ensure kmin and nyquist are valid to avoid invalid values in k_values
+        if self.kmin <= 0 or self.nyquist <= 0:
+            raise ValueError("Invalid kmin or nyquist values. Ensure Box and Nsample are positive.")
         self.k_values = np.linspace(self.kmin, self.nyquist, self.k_count)
 
         # Set the type of linear fitting function
@@ -71,11 +74,45 @@ class PowerSpectrumClass:
     def compute_power_spectra(self):
         """
         Compute the power spectrum using the specified fitting functions."""
-        # Compute the linear and non-linear power spectra 
-        self.pk_nonlin = self.cosmo.nonlin_pert.powerspec_a_k(1./(1+self.z_start), self.k_values)[:,0]
-        print("NONLINEAR POWER SPECTRUM DONE")
-        self.pk_lin = self.cosmo.lin_pert.powerspec_a_k(1./(1+self.z_start), self.k_values)[:,0]
- 
+
+        print("Min k:", np.min(self.k_values))
+        print("Any nonpositive k?", np.any(self.k_values <= 0))
+        print("Any nan/inf in k?", np.any(~np.isfinite(self.k_values)))
+
+        assert np.all(np.isfinite(self.k_values)) and np.all(self.k_values > 0), "k_values must be finite and > 0"
+        
+        a = 1. / (1 + self.z_start)
+        print(f"Computing power spectra at redshift z={self.z_start} (a={a})")
+        print(f"k_values: {self.k_values[:5]} ... {self.k_values[-5:]} (len={len(self.k_values)})")
+
+        if self.cosmo.lin_pert is not None:
+            print("Calling linear power spectrum...")
+            try:
+                result = self.cosmo.lin_pert.powerspec_a_k(a, self.k_values)
+                print("Returned from linear power spectrum")
+                self.pk_lin = result[:, 0]
+                print("LINEAR POWER SPECTRUM DONE")
+            except Exception as e:
+                print(f"Error in linear powerspec: {e}")
+                raise
+        else:
+            print("WARNING: Linear power spectrum is not available at this redshift or model. Skipping.")
+            self.pk_nonlin = None
+
+        if self.cosmo.nonlin_pert is not None:
+            print("Calling non-linear power spectrum...")
+            try:
+                result = self.cosmo.nonlin_pert.powerspec_a_k(a, self.k_values)
+                print("Returned from non-linear power spectrum")
+                self.pk_nonlin = result[:, 0]
+                print("NONLINEAR POWER SPECTRUM DONE")
+            except Exception as e:
+                print(f"Error in non-linear powerspec: {e}")
+                raise
+        else:
+            print("WARNING: Non-linear power spectrum is not available at this redshift or model. Skipping.")
+            self.pk_nonlin = None
+        
     def plot_power_spectrum(self):
         """
         Plot the power spectrum.
@@ -83,14 +120,21 @@ class PowerSpectrumClass:
         plt.figure(figsize=(15.5, 5.5))
         ax = plt.gca()
 
-        ax.loglog(self.k_values, self.pk_lin, color='dodgerblue', linewidth=2, label='linear')
-        ax.loglog(self.k_values, self.pk_nonlin, color='magenta', linewidth=2, label='non-linear')
+        if self.pk_lin is not None:
+            ax.loglog(self.k_values, self.pk_lin, color='dodgerblue', linewidth=2, label='linear')
+        
+        if self.pk_nonlin is not None:
+            ax.loglog(self.k_values, self.pk_nonlin, color='magenta', linewidth=2, label='non-linear')
+        
+        if self.pk_lin is None and self.pk_nonlin is None:
+            raise ValueError("No power spectrum data available. Run compute_power_spectra() first.")
+
         ax.set_xlabel(r'$k \ [Mpc^{-1}]$', fontsize=28)
         ax.set_ylabel(r'$P(k) \ [Mpc^{3}]$', fontsize=28)
 
-        x_text = self.k_values[-1]
-        y_text = self.pk_nonlin[-1]
-        ax.text(x_text, y_text, r'$z = {:.2f}$'.format(self.z_start), fontsize=28, color='black')
+        #x_text = self.k_values[-1]
+        #y_text = self.pk_nonlin[-1]
+        #ax.text(x_text, y_text, r'$z = {:.2f}$'.format(self.z_start), fontsize=28, color='black')
 
         ax.tick_params(axis='both', which='major', labelsize=24)
 
@@ -115,3 +159,23 @@ class PowerSpectrumClass:
         # Save the plot
         output_path = os.path.join(output_dir, f"{self.Nsample}_power_spectrum_plot.png")
         plt.savefig(output_path, bbox_inches='tight')
+
+    def save_power_spectrum_for_ngenic(self, output_path="outputted_power_spectrum/output_power_spectrum_ngenic.txt"):
+        """
+        Save the linear power spectrum in N-GenIC-compatible format:
+        - Space-separated ASCII file
+        - No header
+        - Units: k in h/Mpc, P(k) in (Mpc/h)^3
+        """
+        if self.pk_lin is None:
+            raise ValueError("Linear power spectrum not computed. Run compute_power_spectra() first.")
+
+        # Convert k from Mpc^-1 to h/Mpc using Hubble parameter h
+        h = float(self.param_dictionary["HubbleParam"])
+        k_hmpc = self.k_values * h
+        pk_hmpc = self.pk_lin / h**3  # P(k) in (Mpc/h)^3
+
+        data = np.column_stack((k_hmpc, pk_hmpc))
+        np.savetxt(output_path, data, fmt="%.8e", delimiter=" ")
+
+        print(f"Power spectrum saved in N-GenIC format to: {output_path}")
