@@ -32,14 +32,14 @@ class PowerSpectrumClass:
         self.z_start = float(parameters["Redshift"]) # Get the starting redshift
 
         # Calculate and store the appropriate range of k values to use in the simulation 
-        self.nyquist = float((2 * np.pi / self.box_size) * (self.Nsample / 2)) # Calculate the Nyquist frequency
+        self.nyquist = 100 # float((2 * np.pi / self.box_size) * (self.Nsample / 2)) # Calculate the Nyquist frequency
         self.kmin = float(2 * np.pi / self.box_size) # Calculate the minimum k value
         self.k_count = int(self.Nsample)
         # Ensure kmin and nyquist are valid to avoid invalid values in k_values
         if self.kmin <= 0 or self.nyquist <= 0:
             raise ValueError("Invalid kmin or nyquist values. Ensure Box and Nsample are positive.")
         self.k_values = np.linspace(self.kmin, self.nyquist, self.k_count)
-
+    
         # Set the type of linear fitting function
         if parameters["LinearFittingFunction"] == 0:
             self.cosmo.set(pk_type="EH") # Set the linear fitting function to Eisenstein & Hu
@@ -74,7 +74,7 @@ class PowerSpectrumClass:
     def compute_power_spectra(self):
         """
         Compute the power spectrum using the specified fitting functions."""
-
+        #print(self.k_values)
         print("Min k:", np.min(self.k_values))
         print("Any nonpositive k?", np.any(self.k_values <= 0))
         print("Any nan/inf in k?", np.any(~np.isfinite(self.k_values)))
@@ -83,7 +83,6 @@ class PowerSpectrumClass:
         
         a = 1. / (1 + self.z_start)
         print(f"Computing power spectra at redshift z={self.z_start} (a={a})")
-        print(f"k_values: {self.k_values[:5]} ... {self.k_values[-5:]} (len={len(self.k_values)})")
 
         if self.cosmo.lin_pert is not None:
             print("Calling linear power spectrum...")

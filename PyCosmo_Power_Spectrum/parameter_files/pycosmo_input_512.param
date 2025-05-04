@@ -10,12 +10,12 @@ Nsample          512       % sets the maximum k that the code uses,
 Box              50000 % 7812.5   Periodic box size of simulation
 
 
-Omega            0.3       % Total matter density  (at z=0)
+Omega            0.2       % Total matter density  (at z=0)
 OmegaLambda      0.7       % Cosmological constant (at z=0)
-OmegaBaryon      0.0       % Baryon density        (at z=0)
+OmegaBaryon      0.1       % Baryon density        (at z=0)
 HubbleParam      0.7       % Hubble paramater (may be used for power spec parameterization)
 
-Redshift         0        % Starting redshift
+Redshift         10        % Starting redshift
 
 Sigma8           0.9       % power spectrum normalization
 
