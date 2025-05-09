@@ -10,20 +10,20 @@ Nsample          512       % sets the maximum k that the code uses,
 Box              50000 % 7812.5   Periodic box size of simulation
 
 
-Omega            0.0299       % Total matter density  (at z=0)
+Omega            0.3       % Total matter density  (at z=0)
 OmegaLambda      0.7       % Cosmological constant (at z=0)
-OmegaBaryon      0.0001       % Baryon density        (at z=0)
+OmegaBaryon      0.0       % Baryon density        (at z=0)
 HubbleParam      0.7       % Hubble paramater (may be used for power spec parameterization)
 
 Redshift         11.5        % Starting redshift
 
 Sigma8           0.9       % power spectrum normalization
 
-LinearFittingFunction        0   % "0" selects "EH"; Eisenstein & Hu, 1998, ApJ, 511, 5
+LinearFittingFunction        1   % "0" selects "EH"; Eisenstein & Hu, 1998, ApJ, 511, 5
 		                          % "1" selects "BBKS"; as summarized by Peacock, 1997, MNRAS, 284, 885
                                   % "2" selects "Boltz"; a boltzmann solver method
 
-NonLinearFittingFunction     0    % "0" selects "halofit" from Smith et al., 2003, MNRAS, 341, 1311
+NonLinearFittingFunction     1    % "0" selects "halofit" from Smith et al., 2003, MNRAS, 341, 1311
                                   % "1" selects "rev_halofit" from revision by Takahashi et al., 2012,
                                   % ApJ, 761, 152
                                   % "2" selects "mead" incorporates the implementation as 

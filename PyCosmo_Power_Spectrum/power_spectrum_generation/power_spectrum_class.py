@@ -54,10 +54,10 @@ class PowerSpectrumClass:
             self.cosmo.set(pk_type="boltz")
 
         # Set the type of non-linear fitting function
-        if parameters["NonLinearFittingFunction"] == 0:
+        if int(parameters["NonLinearFittingFunction"]) == 0:
             print("Using Halofit non-linear fitting function")
             self.cosmo.set(pk_nonlin_type="halofit")
-        elif parameters["NonLinearFittingFunction"] == 1:
+        elif int(parameters["NonLinearFittingFunction"]) == 1:
             print("Using Takahashi non-linear fitting function")
             self.cosmo.set(pk_nonlin_type="rev_halofit")
         else:
