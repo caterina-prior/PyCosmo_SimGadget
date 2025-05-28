@@ -33,7 +33,7 @@ class PowerSpectrumClass:
 
         # Calculate and store the appropriate range of k values to use in the simulation
         self.k_count = int(self.Nsample) 
-        self.nyquist = float((np.pi * self.Nsample / (self.box_size)) # Calculate the Nyquist frequency
+        self.nyquist = float(np.pi * self.Nsample / (self.box_size)) # Calculate the Nyquist frequency
         self.kmin = float(2 * np.pi / self.box_size) # Calculate the minimum k value as the fundamental mode
         
         # Ensure kmin and nyquist are valid to avoid invalid values in k_values
@@ -167,10 +167,10 @@ class PowerSpectrumClass:
         if self.pk_lin is None:
             raise ValueError("Linear power spectrum not computed. Run compute_power_spectra() first.")
 
-        # Convert k from Mpc^-1 to h/Mpc using Hubble parameter h
+        # Convert k from Mpc^-1 to h / cm using Hubble parameter h
         h = float(self.param_dictionary["HubbleParam"])
-        k_hmpc = self.k_values # * h
-        pk_hmpc = self.pk_lin # / h**3  # P(k) in (Mpc/h)^3
+        k_hmpc = np.log(self.k_values)
+        pk_hmpc = 4 * np.pi * k_hmpc**(-3) * self.pk_lin # Calculates the dimensionless power spectrum
 
         data = np.column_stack((k_hmpc, pk_hmpc))
         np.savetxt(output_path, data, fmt="%.8e", delimiter=" ")
