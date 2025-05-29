@@ -32,9 +32,9 @@ class PowerSpectrumClass:
         self.z_start = float(parameters["Redshift"]) # Get the starting redshift
 
         # Calculate and store the appropriate range of k values to use in the simulation
-        self.k_count = int(self.Nsample) 
-        self.nyquist =  np.log10(6.20613) # float(np.pi * self.Nsample / self.box_size) # Calculate the Nyquist frequency
-        self.kmin = np.log10(6.28319e-06) # float(np.pi / self.box_size) # Calculate the minimum k value as the fundamental mode
+        self.k_count = 561 # int(self.Nsample) 
+        self.nyquist =  6.20613 # float(np.pi * self.Nsample / self.box_size) # Calculate the Nyquist frequency
+        self.kmin = 6.28319e-06 # float(np.pi / self.box_size) # Calculate the minimum k value as the fundamental mode
         
         # Ensure kmin and nyquist are valid to avoid invalid values in k_values
         if self.kmin <= 0 or self.nyquist <= 0:
@@ -70,7 +70,7 @@ class PowerSpectrumClass:
                        omega_l=float(parameters["OmegaLambda"]), # Set the dark energy density parameter
                        omega_b=float(parameters["OmegaBaryon"]), # Set the baryon density parameter
                        h=float(parameters["HubbleParam"]), # Set the Hubble parameter
-                       pk_norm_type="sigma8", # Set the normalization type to use sigma 8
+                       pk_norm_type= 'none'# "sigma8", # Set the normalization type to use sigma 8
                        pk_norm=float(parameters["Sigma8"]), # Set the amplitude of the power spectrum
                        )
 
@@ -124,10 +124,10 @@ class PowerSpectrumClass:
         ax = plt.gca()
 
         if self.pk_lin is not None:
-            ax.loglog(self.k_values, self.pk_lin, color='dodgerblue', linewidth=2, label='linear')
+            ax.plot(self.k_values, np.log10(self.pk_lin), color='dodgerblue', linewidth=2, label='linear')
         
         if self.pk_nonlin is not None:
-            ax.loglog(self.k_values, self.pk_nonlin, color='magenta', linewidth=2, label='non-linear')
+            ax.plot(self.k_values, np.log10(self.pk_nonlin), color='magenta', linewidth=2, label='non-linear')
         
         if self.pk_lin is None and self.pk_nonlin is None:
             raise ValueError("No power spectrum data available. Run compute_power_spectra() first.")
@@ -170,8 +170,10 @@ class PowerSpectrumClass:
         if self.pk_lin is None:
             raise ValueError("Linear power spectrum not computed. Run compute_power_spectra() first.")
 
-        k_h_Mpc = 10**(self.k_values)  # Convert log k values to k in h/Mpc  # Convert to h/cm
-        delta_squared = 4 * np.pi * (k_h_Mpc)**3 * self.pk_lin  # Calculate the dimensionless power spectrum
+        k_h_Mpc = 10**(self.k_values)
+
+        k_h_cm = k_h_Mpc * self.unitlength_in_cm  # Convert k values h/cm
+        delta_squared = 4 * np.pi * (k_h_Mpc)**3 * (self.pk_lin)  # Calculate the dimensionless power spectrum      
 
         log_k = np.log10(k_h_Mpc)
         log_delta_sqrd = np.log10(delta_squared)
