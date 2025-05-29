@@ -26,20 +26,22 @@ class PowerSpectrumClass:
         self.param_dictionary = parameters # Store the parameter as a dictionary
         self.cosmo = PyCosmo.build() # Initialize the PyCosmo object
         
-        self.box_size = float(parameters["Box"])  # Get the periodic box size of the simulation
+        self.box_size = float(parameters["Box"])  # Box size assumed to be in  Mpc/h
         self.Nsample = int(parameters["Nsample"]) # Get the number of samples in the simulation
 
         self.z_start = float(parameters["Redshift"]) # Get the starting redshift
 
         # Calculate and store the appropriate range of k values to use in the simulation
         self.k_count = int(self.Nsample) 
-        self.nyquist = float(np.pi * self.Nsample / (self.box_size)) # Calculate the Nyquist frequency
-        self.kmin = float(2 * np.pi / self.box_size) # Calculate the minimum k value as the fundamental mode
+        self.nyquist = 10**(3)*float(np.pi * self.Nsample / self.box_size) # Calculate the Nyquist frequency
+        self.kmin = float(np.pi / self.box_size) # Calculate the minimum k value as the fundamental mode
         
         # Ensure kmin and nyquist are valid to avoid invalid values in k_values
         if self.kmin <= 0 or self.nyquist <= 0:
             raise ValueError("Invalid kmin or nyquist values. Ensure Box and Nsample are positive.")
-        self.k_values = np.logspace(np.log10(self.kmin), np.log10(self.nyquist), self.k_count)
+        
+        self.k_values = np.linspace(np.log10(self.kmin), np.log10(self.nyquist), self.k_count)
+
         print(f"Using k values from {self.kmin:.2e} to {self.nyquist:.2e} with {self.k_count} samples")
     
         # Set the type of linear fitting function
@@ -82,14 +84,15 @@ class PowerSpectrumClass:
     def compute_power_spectra(self):
         """
         Compute the power spectrum using the specified fitting functions."""
-        assert np.all(np.isfinite(self.k_values)) and np.all(self.k_values > 0), "k_values must be finite and > 0"
+        assert np.all(np.isfinite(self.k_values)), "k_values must be finite"
+
         a = 1. / (1 + self.z_start)
         print(f"Computing power spectra at redshift z={self.z_start} (a={a})")
 
         if self.cosmo.lin_pert is not None:
             print("Calling linear power spectrum...")
             try:
-                result = self.cosmo.lin_pert.powerspec_a_k(a, self.k_values)
+                result = self.cosmo.lin_pert.powerspec_a_k(a, 10**(self.k_values))
                 print("Returned from linear power spectrum")
                 self.pk_lin = result[:, 0]
             except Exception as e:
@@ -102,7 +105,7 @@ class PowerSpectrumClass:
         if self.cosmo.nonlin_pert is not None:
             print("Calling non-linear power spectrum...")
             try:
-                result = self.cosmo.nonlin_pert.powerspec_a_k(a, self.k_values)
+                result = self.cosmo.nonlin_pert.powerspec_a_k(a, 10**(self.k_values))
                 print("Returned from non-linear power spectrum")
                 self.pk_nonlin = result[:, 0]
                 print("NONLINEAR POWER SPECTRUM DONE")
@@ -157,7 +160,7 @@ class PowerSpectrumClass:
 
         print(f"Power spectrum plot saved in: {output_path}")
 
-    def save_power_spectrum_for_ngenic(self, output_path="outputted_power_spectrum/output_power_spectrum_ngenic.txt"):
+    def save_power_spectrum_for_ngenic(self, output_path=f"outputted_power_spectrum/512_input_spectrum.txt"):
         """
         Save the linear power spectrum in N-GenIC-compatible format:
         - Space-separated ASCII file
@@ -167,12 +170,25 @@ class PowerSpectrumClass:
         if self.pk_lin is None:
             raise ValueError("Linear power spectrum not computed. Run compute_power_spectra() first.")
 
-        # Convert k from Mpc^-1 to h / cm using Hubble parameter h
-        h = float(self.param_dictionary["HubbleParam"])
-        k_hmpc = np.log(self.k_values)
-        pk_hmpc = 4 * np.pi * k_hmpc**(-3) * self.pk_lin # Calculates the dimensionless power spectrum
+        log_k = self.k_values
+        k_values = 10**(log_k)
+        log_delta_sqrd = np.log10(4 * np.pi * (k_values)**(3) * self.pk_lin) # Calculates the dimensionless power spectrum
+        
+        # Plot log_k vs log_delta_sqrd and save to output_plots
+        plt.figure(figsize=(10, 6))
+        plt.loglog(k_values, 4 * np.pi * (k_values)**3 * self.pk_lin, color='teal', linewidth=2)
+        plt.xlabel(r'$k$', fontsize=18)
+        plt.ylabel(r'$\Delta^2(k)$', fontsize=18)
+        plt.title('Dimensionless Power Spectrum', fontsize=20)
+        plt.grid(True, which='both', ls='--', alpha=0.5)
+        plt.tight_layout()
+        os.makedirs("output_plots", exist_ok=True)
+        plot_path = os.path.join("output_plots", f"{self.Nsample}_logk_logdeltasq_plot.png")
+        plt.savefig(plot_path, bbox_inches='tight')
+        plt.close()
 
-        data = np.column_stack((k_hmpc, pk_hmpc))
+        print(f"log_k vs log_delta_sqrd plot saved in: {plot_path}")
+        data = np.column_stack((log_k, log_delta_sqrd))
         np.savetxt(output_path, data, fmt="%.8e", delimiter=" ")
 
         print(f"Power spectrum saved in N-GenIC format to: {output_path}")
