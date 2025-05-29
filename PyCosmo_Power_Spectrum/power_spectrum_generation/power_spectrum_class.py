@@ -70,8 +70,8 @@ class PowerSpectrumClass:
                        omega_l=float(parameters["OmegaLambda"]), # Set the dark energy density parameter
                        omega_b=float(parameters["OmegaBaryon"]), # Set the baryon density parameter
                        h=float(parameters["HubbleParam"]), # Set the Hubble parameter
-                       pk_norm_type= 'none'# "sigma8", # Set the normalization type to use sigma 8
-                       pk_norm=float(parameters["Sigma8"]), # Set the amplitude of the power spectrum
+                       pk_norm_type="sigma8", # Set the normalization type to use sigma 8
+                       pk_norm= float(parameters["Sigma8"]), # Set the amplitude of the power spectrum
                        )
 
         self.unitlength_in_cm = float(parameters["InputSpectrum_UnitLength_in_cm"]) # Get the unit length in cm
@@ -87,6 +87,7 @@ class PowerSpectrumClass:
         assert np.all(np.isfinite(self.k_values)), "k_values must be finite"
 
         a = 1. / (1 + self.z_start)
+
         print(f"Computing power spectra at redshift z={self.z_start} (a={a})")
 
         if self.cosmo.lin_pert is not None:
@@ -172,7 +173,6 @@ class PowerSpectrumClass:
 
         k_h_Mpc = 10**(self.k_values)
 
-        k_h_cm = k_h_Mpc * self.unitlength_in_cm  # Convert k values h/cm
         delta_squared = 4 * np.pi * (k_h_Mpc)**3 * (self.pk_lin)  # Calculate the dimensionless power spectrum      
 
         log_k = np.log10(k_h_Mpc)
