@@ -33,8 +33,8 @@ class PowerSpectrumClass:
 
         # Calculate and store the appropriate range of k values to use in the simulation
         self.k_count = int(self.Nsample) 
-        self.nyquist = 10**(3)*float(np.pi * self.Nsample / self.box_size) # Calculate the Nyquist frequency
-        self.kmin = float(np.pi / self.box_size) # Calculate the minimum k value as the fundamental mode
+        self.nyquist =  np.log10(6.20613) # float(np.pi * self.Nsample / self.box_size) # Calculate the Nyquist frequency
+        self.kmin = np.log10(6.28319e-06) # float(np.pi / self.box_size) # Calculate the minimum k value as the fundamental mode
         
         # Ensure kmin and nyquist are valid to avoid invalid values in k_values
         if self.kmin <= 0 or self.nyquist <= 0:
@@ -74,9 +74,9 @@ class PowerSpectrumClass:
                        pk_norm=float(parameters["Sigma8"]), # Set the amplitude of the power spectrum
                        )
 
-        self.unitlength_in_cm = parameters["UnitLength_in_cm"] # Get the unit length in cm
-        self.unitmass_in_g = parameters["UnitMass_in_g"] # Get the unit mass in g   
-        self.unitvelocity_in_cm_per_s = parameters["UnitVelocity_in_cm_per_s"] # Get the unit velocity in cm/s
+        self.unitlength_in_cm = float(parameters["InputSpectrum_UnitLength_in_cm"]) # Get the unit length in cm
+        self.unitmass_in_g = float(parameters["UnitMass_in_g"]) # Get the unit mass in g   
+        self.unitvelocity_in_cm_per_s = float(parameters["UnitVelocity_in_cm_per_s"]) # Get the unit velocity in cm/s
 
         self.pk_lin = None # Linear power spectrum not yet initialized
         self.pk_nonlin = None # Non-linear power spectrum not yet initialized
@@ -170,24 +170,12 @@ class PowerSpectrumClass:
         if self.pk_lin is None:
             raise ValueError("Linear power spectrum not computed. Run compute_power_spectra() first.")
 
-        log_k = self.k_values
-        k_values = 10**(log_k)
-        log_delta_sqrd = np.log10(4 * np.pi * (k_values)**(3) * self.pk_lin) # Calculates the dimensionless power spectrum
-        
-        # Plot log_k vs log_delta_sqrd and save to output_plots
-        plt.figure(figsize=(10, 6))
-        plt.loglog(k_values, 4 * np.pi * (k_values)**3 * self.pk_lin, color='teal', linewidth=2)
-        plt.xlabel(r'$k$', fontsize=18)
-        plt.ylabel(r'$\Delta^2(k)$', fontsize=18)
-        plt.title('Dimensionless Power Spectrum', fontsize=20)
-        plt.grid(True, which='both', ls='--', alpha=0.5)
-        plt.tight_layout()
-        os.makedirs("output_plots", exist_ok=True)
-        plot_path = os.path.join("output_plots", f"{self.Nsample}_logk_logdeltasq_plot.png")
-        plt.savefig(plot_path, bbox_inches='tight')
-        plt.close()
+        k_h_Mpc = 10**(self.k_values)  # Convert log k values to k in h/Mpc  # Convert to h/cm
+        delta_squared = 4 * np.pi * (k_h_Mpc)**3 * self.pk_lin  # Calculate the dimensionless power spectrum
 
-        print(f"log_k vs log_delta_sqrd plot saved in: {plot_path}")
+        log_k = np.log10(k_h_Mpc)
+        log_delta_sqrd = np.log10(delta_squared)
+        
         data = np.column_stack((log_k, log_delta_sqrd))
         np.savetxt(output_path, data, fmt="%.8e", delimiter=" ")
 
