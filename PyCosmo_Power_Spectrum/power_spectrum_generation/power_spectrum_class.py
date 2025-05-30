@@ -33,8 +33,8 @@ class PowerSpectrumClass:
 
         # Calculate and store the appropriate range of k values to use in the simulation
         self.k_count = 561 # int(self.Nsample) 
-        self.nyquist =  6.20613 # float(np.pi * self.Nsample / self.box_size) # Calculate the Nyquist frequency
-        self.kmin = 6.28319e-06 # float(np.pi / self.box_size) # Calculate the minimum k value as the fundamental mode
+        self.nyquist =  loat(np.pi * self.Nsample / self.box_size) # Calculate the Nyquist frequency 6.20613 # f
+        self.kmin = float(np.pi / self.box_size) # Calculate the minimum k value as the fundamental mode 6.28319e-06 # 
         
         # Ensure kmin and nyquist are valid to avoid invalid values in k_values
         if self.kmin <= 0 or self.nyquist <= 0:
