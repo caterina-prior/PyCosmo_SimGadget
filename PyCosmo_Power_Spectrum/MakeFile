@@ -4,7 +4,7 @@
 VENV := venv
 
 # Parameter file configuration
-PARAM_FILE := pycosmo_input_512.param
+PARAM_FILE := pycosmo_input_32.param
 
 # Cache directory for sympy2c
 CACHE_DIR := $(HOME)/_cache/sympy2c

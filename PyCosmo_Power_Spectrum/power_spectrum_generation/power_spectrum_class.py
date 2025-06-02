@@ -26,17 +26,22 @@ class PowerSpectrumClass:
         self.param_dictionary = parameters # Store the parameter as a dictionary
         self.cosmo = PyCosmo.build() # Initialize the PyCosmo object
         
-        self.box_size = float(parameters["Box"])  # Box size assumed to be in  Mpc/h
+        self.box_size = float(parameters["Box"])  # Box size in Mpc/h
         self.Nsample = int(parameters["Nsample"]) # Get the number of samples in the simulation
 
         self.z_start = float(parameters["Redshift"]) # Get the starting redshift
 
         # Calculate and store the appropriate range of k values to use in the simulation
-        self.k_count = 561 # int(self.Nsample) 
-        self.nyquist =  loat(np.pi * self.Nsample / self.box_size) # Calculate the Nyquist frequency 6.20613 # f
-        self.kmin = float(np.pi / self.box_size) # Calculate the minimum k value as the fundamental mode 6.28319e-06 # 
-        
-        # Ensure kmin and nyquist are valid to avoid invalid values in k_values
+        self.k_count = int(self.Nsample)**3 # Number of k values to sample
+
+        self.unitlength_in_cm = float(parameters["UnitLength_in_cm"]) # Get the unit length in cm
+        self.unitmass_in_g = float(parameters["UnitMass_in_g"]) # Get the unit mass in g   
+        self.unitvelocity_in_cm_per_s = float(parameters["UnitVelocity_in_cm_per_s"]) # Get the unit velocity in cm/s
+
+        self.kmin = 2 * np.pi / (1000.0 * (3.085678e24 / self.unitlength_in_cm)) # Minimum k value in Mpc/h
+        self.nyquist = self.box_size * 2 * np.pi / (0.001 * (3.085678e24 / self.unitlength_in_cm)) # Nyquist frequency in Mpc/h
+
+        # Ensure kmin and nyquist are valid to avoid invalid values in k_values        
         if self.kmin <= 0 or self.nyquist <= 0:
             raise ValueError("Invalid kmin or nyquist values. Ensure Box and Nsample are positive.")
         
@@ -73,10 +78,6 @@ class PowerSpectrumClass:
                        pk_norm_type="sigma8", # Set the normalization type to use sigma 8
                        pk_norm= float(parameters["Sigma8"]), # Set the amplitude of the power spectrum
                        )
-
-        self.unitlength_in_cm = float(parameters["InputSpectrum_UnitLength_in_cm"]) # Get the unit length in cm
-        self.unitmass_in_g = float(parameters["UnitMass_in_g"]) # Get the unit mass in g   
-        self.unitvelocity_in_cm_per_s = float(parameters["UnitVelocity_in_cm_per_s"]) # Get the unit velocity in cm/s
 
         self.pk_lin = None # Linear power spectrum not yet initialized
         self.pk_nonlin = None # Non-linear power spectrum not yet initialized
@@ -161,7 +162,7 @@ class PowerSpectrumClass:
 
         print(f"Power spectrum plot saved in: {output_path}")
 
-    def save_power_spectrum_for_ngenic(self, output_path=f"outputted_power_spectrum/512_input_spectrum.txt"):
+    def save_power_spectrum_for_ngenic(self, output_path=f"outputted_power_spectrum/input_spectrum.txt"):
         """
         Save the linear power spectrum in N-GenIC-compatible format:
         - Space-separated ASCII file
@@ -171,11 +172,14 @@ class PowerSpectrumClass:
         if self.pk_lin is None:
             raise ValueError("Linear power spectrum not computed. Run compute_power_spectra() first.")
 
+        output_path=f"outputted_power_spectrum/{self.Nsample}_input_spectrum.txt"
+
         k_h_Mpc = 10**(self.k_values)
 
         delta_squared = 4 * np.pi * (k_h_Mpc)**3 * (self.pk_lin)  # Calculate the dimensionless power spectrum      
 
         log_k = np.log10(k_h_Mpc)
+
         log_delta_sqrd = np.log10(delta_squared)
         
         data = np.column_stack((log_k, log_delta_sqrd))
