@@ -117,7 +117,14 @@ test_full: install_deps clear_cache
 	@echo "Running full test suite (with GSL rebuild)..."
 	@set -e; \
 	PYTHON_SYMPY2C_USE_SHARED_GSL=1 $(VENV)/bin/python -m pytest tests/
-	
+
+# Create power spectrum plots
+# Save .pngs in folder
+
+
+# Compare PyCosmo-generated initial conditions with automatic ngenic ones
+# Also generate phase-space diagrams, saved in folder 
+
 # Run the main script with a specified parameter file
 run:
 	@echo "Usage: make run PARAM=your_param_file.param"
