@@ -1,18 +1,15 @@
 # === Configuration ===
 
-# Define the virtual environment directory
-VENV := venv
 
-# Parameter file configuration
-PARAM_FILE := pycosmo_input_32.param
+VENV := venv # Define the virtual environment directory
+PARAM_FILE := pycosmo_input_32.param # Parameter file configuration
+CACHE_DIR := $(HOME)/_cache/sympy2c # Cache directory for sympy2c
+ROOT_DIR := $(shell pwd) # Get the absolute path of the repository root
 
-# Cache directory for sympy2c
-CACHE_DIR := $(HOME)/_cache/sympy2c
-
-# Get the absolute path of the repository root
-ROOT_DIR := $(shell pwd)
 
 # === Platform Detection ===
+
+
 UNAME_S := $(shell uname -s)
 UNAME_R := $(shell uname -r)
 
@@ -28,40 +25,41 @@ ifeq ($(UNAME_S),Darwin)
 	PLATFORM := mac
 endif
 
-# Set GSL library and include paths based on platform
-ifeq ($(PLATFORM),linux)
-	GSL_LIB_PATH := /usr/lib/x86_64-linux-gnu
-	GSL_INCLUDE_PATH := /usr/include
-endif
+# === GSL Configuration ===
 
-ifeq ($(PLATFORM),wsl)
-	GSL_LIB_PATH := /usr/lib/x86_64-linux-gnu
-	GSL_INCLUDE_PATH := /usr/include
-endif
 
 ifeq ($(PLATFORM),mac)
 	GSL_LIB_PATH := /usr/local/lib
 	GSL_INCLUDE_PATH := /usr/local/include
+else
+	GSL_LIB_PATH := /usr/lib/x86_64-linux-gnu
+	GSL_INCLUDE_PATH := /usr/include
 endif
 
-# Compiler flags
-CFLAGS += -I$(GSL_INCLUDE_PATH)  # Include path for GSL headers
-LDFLAGS += -L$(GSL_LIB_PATH) -lgsl -lgslcblas  # Link GSL and GSL CBLAS
 
-# Export environment variables
-export CFLAGS LDFLAGS
+# === Compiler Flags ===
+
+CFLAGS += -I$(GSL_INCLUDE_PATH)
+LDFLAGS += -L$(GSL_LIB_PATH) -lgsl -lgslcblas
+
+
+# === Environment Variables ===
+
+
+export CFLAGS
+export LDFLAGS
 export PYTHONPATH := $(ROOT_DIR)
 export CC := gcc
 export CXX := g++
 export SYMPY2C_USE_SYSTEM_GSL := 1
 export LD_LIBRARY_PATH := $(GSL_LIB_PATH):$(LD_LIBRARY_PATH)
-export GSL_LIB_PATH
+
 
 # === Targets ===
 
+
 .PHONY: all venv setup install install_deps clear_cache test test_full run clean
 
-# Default target
 all: setup run
 
 # Create a virtual environment with Python 3.9
@@ -82,22 +80,21 @@ install: venv
 
 # Install system and Python build dependencies
 install_deps: venv
-	@echo "Installing/upgrading build tools and Python packages..."
+	@echo "Installing/upgrading build tools and system deps..."
 	$(VENV)/bin/pip install --upgrade pip setuptools wheel
 
-	@echo "Checking platform for system dependencies..."
-	@if [ -x "$$(command -v apt-get)" ]; then \
-		echo "Detected apt-based system (Debian/Ubuntu/WSL). Installing GSL and build tools..."; \
+	@if command -v apt-get >/dev/null; then \
+		echo "Detected apt-based system. Installing GSL..."; \
 		sudo apt-get update; \
 		sudo apt-get install -y build-essential libgsl-dev autoconf automake libtool; \
 		sudo apt-get install -y texlive-latex-base texlive-fonts-recommended dvipng cm-super; \
-	elif [ -x "$$(command -v brew)" ]; then \
+	elif command -v brew >/dev/null; then \
 		echo "Detected macOS with Homebrew. Installing GSL..."; \
 		brew install gsl; \
 	else \
-		echo "Skipping system package installation. Please ensure GSL and build tools are available."; \
+		echo "No known package manager found. Please install GSL manually."; \
 	fi
-
+	
 # One-time full setup (venv + pip + system deps)
 setup: venv install install_deps
 	@echo "Environment setup complete."
