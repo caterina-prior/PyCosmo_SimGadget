@@ -117,11 +117,16 @@ test_full: install_deps clear_cache
 	@echo "Running full test suite (with GSL rebuild)..."
 	@set -e; \
 	PYTHON_SYMPY2C_USE_SHARED_GSL=1 $(VENV)/bin/python -m pytest tests/
-
-# Run the main script
+	
+# Run the main script with a specified parameter file
 run:
-	@echo "Running custom power spectrum generator..."
-	$(VENV)/bin/python -m power_spectrum_generation.custom_power_spectrum $(PARAM_FILE)
+	@echo "Usage: make run PARAM=your_param_file.param"
+	@if [ -z "$(PARAM)" ]; then \
+		echo "Error: No parameter file specified. Use PARAM=your_param_file.param"; \
+		exit 1; \
+	fi
+	@echo "Running custom power spectrum generator with $(PARAM)..."
+	$(VENV)/bin/python -m power_spectrum_generation.custom_power_spectrum $(PARAM)
 
 # Clean up virtual environment and bytecode
 clean:
