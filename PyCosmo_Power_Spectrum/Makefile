@@ -30,15 +30,14 @@ endif
 
 # === GSL Configuration ===
 
-
-ifeq ($(PLATFORM),mac)
-	GSL_LIB_PATH := /usr/local/lib
-	GSL_INCLUDE_PATH := /usr/local/include
-else
+ifeq ($(origin GSL_ROOT_DIR), undefined)
 	GSL_LIB_PATH := /usr/lib/x86_64-linux-gnu
 	GSL_INCLUDE_PATH := /usr/include
+else
+	GSL_ROOT := $(GSL_ROOT_DIR)
+	GSL_LIB_PATH := $(GSL_ROOT)/lib
+	GSL_INCLUDE_PATH := $(GSL_ROOT)/include
 endif
-
 
 # === Compiler Flags ===
 
