@@ -1,19 +1,16 @@
 import os, sys
 import PyCosmo
 import numpy as np
-# Removed unused import: matplotlib
 import matplotlib.pyplot as plt
 
 # Set up relative imports
 current_file_path = os.path.abspath(__file__)
 base_dir = os.path.dirname(os.path.dirname(current_file_path))
-sys.path.insert(0, base_dir)
-
-# Import custom modules
-# Removed unused import: deltanorm
+sys.path.insert(0, base_dir)  # Adds base_dir to Python path
 
 # Use matplotlib style
-plt.style.use("plotting/pycosmohub.mplstyle")
+style_path = os.path.join(base_dir, "plotting", "pycosmohub.mplstyle")
+plt.style.use(style_path)
 
 class PowerSpectrumClass:
    
