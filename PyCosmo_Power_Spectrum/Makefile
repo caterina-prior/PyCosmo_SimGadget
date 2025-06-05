@@ -1,10 +1,13 @@
 # === Configuration ===
 
 
-VENV := venv # Define the virtual environment directory
-PARAM_FILE := pycosmo_input_32.param # Parameter file configuration
-CACHE_DIR := $(HOME)/_cache/sympy2c # Cache directory for sympy2c
-ROOT_DIR := $(shell pwd) # Get the absolute path of the repository root
+VENV := venv
+# Parameter file configuration
+PARAM_FILE := pycosmo_input_32.param
+# Cache directory for sympy2c
+CACHE_DIR := $(HOME)/_cache/sympy2c
+# Get the absolute path of the repository root
+ROOT_DIR := $(shell pwd)
 
 
 # === Platform Detection ===
