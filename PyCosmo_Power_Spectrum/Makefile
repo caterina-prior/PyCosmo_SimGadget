@@ -1,5 +1,8 @@
-# === Configuration ===
+# === System Type Selection ===
+SYSTYPE := "sem_thesis"
 
+
+# === Configuration ===
 
 VENV := venv
 # Parameter file configuration
@@ -11,7 +14,6 @@ ROOT_DIR := $(shell pwd)
 
 
 # === Platform Detection ===
-
 
 UNAME_S := $(shell uname -s)
 UNAME_R := $(shell uname -r)
@@ -30,13 +32,22 @@ endif
 
 # === GSL Configuration ===
 
-ifeq ($(origin GSL_ROOT_DIR), undefined)
-	GSL_LIB_PATH := /usr/lib/x86_64-linux-gnu
-	GSL_INCLUDE_PATH := /usr/include
+
+# === GSL Configuration ===
+
+ifeq ($(SYSTYPE), "sem_thesis")
+	GSL_LIB_PATH := /cluster/software/stacks/2024-06/spack/opt/spack/linux-ubuntu22.04-x86_64_v3/gcc-12.2.0/gsl-2.7.1-y3rsoy4n2dbrmhdsghb4dmdmetvgfz7u/lib
+	GSL_INCLUDE_PATH := /cluster/software/stacks/2024-06/spack/opt/spack/linux-ubuntu22.04-x86_64_v3/gcc-12.2.0/gsl-2.7.1-y3rsoy4n2dbrmhdsghb4dmdmetvgfz7u/include
+	CC := mpicc
 else
-	GSL_ROOT := $(GSL_ROOT_DIR)
-	GSL_LIB_PATH := $(GSL_ROOT)/lib
-	GSL_INCLUDE_PATH := $(GSL_ROOT)/include
+	ifeq ($(PLATFORM),mac)
+		GSL_LIB_PATH := /usr/local/lib
+		GSL_INCLUDE_PATH := /usr/local/include
+	else
+		GSL_LIB_PATH := /usr/lib/x86_64-linux-gnu
+		GSL_INCLUDE_PATH := /usr/include
+	endif
+	CC := gcc
 endif
 
 # === Compiler Flags ===
@@ -47,15 +58,12 @@ LDFLAGS += -L$(GSL_LIB_PATH) -lgsl -lgslcblas
 
 # === Environment Variables ===
 
-
 export CFLAGS
 export LDFLAGS
 export PYTHONPATH := $(ROOT_DIR)
-export CC := gcc
-export CXX := g++
+export CC
 export SYMPY2C_USE_SYSTEM_GSL := 1
 export LD_LIBRARY_PATH := $(GSL_LIB_PATH):$(LD_LIBRARY_PATH)
-
 
 # === Targets ===
 
