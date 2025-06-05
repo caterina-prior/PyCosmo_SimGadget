@@ -1,10 +1,13 @@
 # === Configuration ===
 
 
-VENV := venv # Define the virtual environment directory
-PARAM_FILE := pycosmo_input_32.param # Parameter file configuration
-CACHE_DIR := $(HOME)/_cache/sympy2c # Cache directory for sympy2c
-ROOT_DIR := $(shell pwd) # Get the absolute path of the repository root
+VENV := venv
+# Parameter file configuration
+PARAM_FILE := pycosmo_input_32.param
+# Cache directory for sympy2c
+CACHE_DIR := $(HOME)/_cache/sympy2c
+# Get the absolute path of the repository root
+ROOT_DIR := $(shell pwd)
 
 
 # === Platform Detection ===
@@ -60,7 +63,7 @@ export LD_LIBRARY_PATH := $(GSL_LIB_PATH):$(LD_LIBRARY_PATH)
 
 .PHONY: all venv setup install install_deps clear_cache test test_full run clean
 
-all: setup run
+all: setup
 
 # Create a virtual environment with Python 3.9
 venv:
@@ -84,17 +87,21 @@ install_deps: venv
 	$(VENV)/bin/pip install --upgrade pip setuptools wheel
 
 	@if command -v apt-get >/dev/null; then \
-		echo "Detected apt-based system. Installing GSL..."; \
-		sudo apt-get update; \
-		sudo apt-get install -y build-essential libgsl-dev autoconf automake libtool; \
-		sudo apt-get install -y texlive-latex-base texlive-fonts-recommended dvipng cm-super; \
+		if command -v sudo >/dev/null; then \
+			echo "Detected apt-based system. Installing GSL..."; \
+			sudo apt-get update; \
+			sudo apt-get install -y build-essential libgsl-dev autoconf automake libtool; \
+			sudo apt-get install -y texlive-latex-base texlive-fonts-recommended dvipng cm-super; \
+		else \
+			echo "Skipping apt-get installation: sudo not found."; \
+		fi; \
 	elif command -v brew >/dev/null; then \
 		echo "Detected macOS with Homebrew. Installing GSL..."; \
 		brew install gsl; \
 	else \
 		echo "No known package manager found. Please install GSL manually."; \
 	fi
-	
+
 # One-time full setup (venv + pip + system deps)
 setup: venv install install_deps
 	@echo "Environment setup complete."
