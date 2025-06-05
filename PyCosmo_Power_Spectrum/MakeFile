@@ -137,6 +137,8 @@ run:
 	@echo "Running N-GenIC with $(PARAM)..."
 	@cd .. && ./N-GenIC $(lastword $(PARAM))
 
+# Save the output in a specific directory (!!!)
+
 # Clean up virtual environment and bytecode
 clean:
 	@echo "Cleaning up virtual environment and Python artifacts..."

@@ -53,6 +53,67 @@ This will:
 
 If python3.9 is not found, install it using your system’s package manager.
 
+### 3. Load modules for N-GenIC
+
+## Installing N-GenIC
+The N-GenIC code needs the following libraries:
+
+GSL, HDF5, and FFTW.
+
+On clusters, they can be loaded as modules. Example:
+
+```
+module load gsl/2.7
+module load hdf5/1.10.8_slurm
+```
+
+### Install the correct version of FFTW
+N-GenIC requires an older version of the FFTW code, namely version 2. This version can be installed from their website. To install the library at a specific path `path`, one can specify this with the `prefix` option. Furthermore, the options `shared` and `mpi` have to be enabled. 
+
+
+```
+wget https://www.fftw.org/fftw-2.1.5.tar.gz
+tar -xvzf fftw-2.1.5.tar.gz
+cd fftw-2.1.5
+./configure --prefix=<path> --enable-shared --enable-mpi
+make
+make install
+```
+
+This will install the library in `path/lib/`. To make sure that during the compilation of N-GenIC, the library will be found, one can set 
+
+`export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:path/lib/`
+
+### Compile N-GenIC
+To make sure that the FFTW library is found, one needs to specify in the `Makefile` inside the N-GenIC folder, the following two options, which specify the location of the previously installed FFTW library.
+
+```
+FFTW_INCL= -I path/include
+FFTW_LIBS= -L path/lib
+```
+
+Then the source code can be compiled:
+
+```
+cd ngenic
+make
+```
+
+The loading of the required modules can be automated by adding the following to your ~/.bash_profile:
+
+```
+PATH=$PATH:$HOME/.local/bin:$HOME/bin
+
+export PATH
+
+module purge
+module load stack/2024-06
+module load gcc/12.2.0
+module load openmpi/4.1.6
+module load gsl/2.7.1
+module load fftw/2.1.5
+```
+
 ## Usage
 
 To run the main script with a specific parameter file:
