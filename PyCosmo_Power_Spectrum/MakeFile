@@ -135,9 +135,8 @@ run:
 	$(VENV)/bin/python -m power_spectrum_generation.custom_power_spectrum $(PARAM)
 
 	@echo "Running N-GenIC with $(PARAM)..."
-	@cd .. && ./N-GenIC $(lastword $(PARAM))
+	@cd .. && ../ngenic/N-GenIC $(lastword $(PARAM))
 
-# Save the output in a specific directory (!!!)
 
 # Clean up virtual environment and bytecode
 clean:
