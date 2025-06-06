@@ -93,11 +93,7 @@ test_full: install_deps clear_cache
 	@set -e; \
 	PYTHON_SYMPY2C_USE_SHARED_GSL=1 $(VENV)/bin/python -m pytest tests/
 
-# Create power spectrum plots
-# Save .pngs in folder
-
-# Compare PyCosmo-generated initial conditions with automatic ngenic ones
-# Also generate phase-space diagrams, saved in folder 
+# TO ADD: GENERATE PHASE SPACE DIAGRAMS, SAVE IN FOLDER
 
 # Run the main script with a specified parameter file
 run:
@@ -108,10 +104,6 @@ run:
 	fi
 	@echo "Running custom power spectrum generator with $(PARAM)..."
 	$(VENV)/bin/python -m power_spectrum_generation.custom_power_spectrum $(PARAM)
-
-	@echo "Running N-GenIC with $(PARAM)..."
-	@cd .. && ../ngenic/N-GenIC $(lastword $(PARAM))
-
 
 # Clean up virtual environment and bytecode
 clean:

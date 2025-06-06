@@ -151,6 +151,14 @@ $(EXEC): $(OBJS)
 
 $(OBJS): $(INCL) 
 
+run:
+ifeq ($(ID),)
+	$(error You must specify an ID, e.g. 'make run ID=32')
+endif
+	@echo "Running N-GenIC with ID=$(ID)"
+	@./N-GenIC parameterfiles/lsf_$(ID).param
+	@./N-GenIC parameterfiles/lsf_pycosmo_$(ID).param
+
 
 .PHONY : clean
 clean:

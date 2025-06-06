@@ -28,16 +28,15 @@ PyCosmo_Power_Spectrum/
 * Make
 * GSL (GNU Scientific Library)
 * System Package Manager:
-    * ```apt``` for Linux/WSL
-    * ```brew``` for macOS
+    * `apt` for Linux/WSL
+    * `brew` for macOS
 
 ## Setup Instructions
 
 This project requires two different versions of GSL:
 
-GSL 2.8 for PyCosmo
-
-GSL 2.7.1 for N-GenIC
+* GSL 2.8 for PyCosmo
+* GSL 2.7.1 for N-GenIC
 
 Since both versions cannot coexist easily in the same environment, two separate environment setup scripts are provided.
 
@@ -49,9 +48,11 @@ git clone https://github.com/your-repo/power-spectrum-generator.git
 cd power-spectrum-generator
 ```
 
-### 2. Set Up PyCosmo Environment 
+### 2. Set Up PyCosmo 
 
-This is required to generate the Power Spectrum files to be inputted into N-GenIC:
+#### 2.1 Set-up the PyCosmo Environment 
+
+This is required to generate the Power Spectrum files which will be used as inputs in N-GenIC:
 
 ```bash
 cd PyCosmo_Power_Spectrum
@@ -60,59 +61,30 @@ source setup_pycosmo.sh
 
 This will:
 
-Load the appropriate GSL 2.8 library
-
-Activate the Python virtual environment
-
-Set ```LD_LIBRARY_PATH``` correctly
+* Load the appropriate GSL 2.8 library
+* Activate the Python virtual environment
+* Set `LD_LIBRARY_PATH` correctly
 
 
-### 3. Set Up N-GenIC Environment
+#### 2.2 Run the PyCosmo Makefile
 
-This is required to generate initial conditions using N-GenIC.
+
+```bash
+make
+```
+
+This will:
+* Load requirements for PyCosmo to run 
+
+### 3. Set Up N-GenIC
+
+#### 3.1 Install the correct version of FFTW:
+
+N-GenIC requires an older version of the FFTW code, namely version 2. This version can be installed from their website. To install the library at a specific path path, one can specify this with the prefix option. Furthermore, the options shared and mpi have to be enabled. 
+
+
 ```bash
 cd ngenic
-source setup_ngenic.sh
-```
-
-This will:
-
-Load the appropriate GSL 2.7.1 library
-
-Set ```LD_LIBRARY_PATH``` for N-GenIC compatibility
-
-### 3. Run Setup
-
-```bash
-make setup
-```
-
-This will:
-* Create a Python 3.9 virtual environment
-* Install Python dependencies
-* Install system dependencies (GSL, LaTeX tools, etc.)
-
-If python3.9 is not found, install it using your system’s package manager.
-
-### 3. Load modules for N-GenIC
-
-## Installing N-GenIC
-The N-GenIC code needs the following libraries:
-
-GSL, HDF5, and FFTW.
-
-On clusters, they can be loaded as modules. Example:
-
-```
-module load gsl/2.7
-module load hdf5/1.10.8_slurm
-```
-
-### Install the correct version of FFTW
-N-GenIC requires an older version of the FFTW code, namely version 2. This version can be installed from their website. To install the library at a specific path `path`, one can specify this with the `prefix` option. Furthermore, the options `shared` and `mpi` have to be enabled. 
-
-
-```
 wget https://www.fftw.org/fftw-2.1.5.tar.gz
 tar -xvzf fftw-2.1.5.tar.gz
 cd fftw-2.1.5
@@ -121,58 +93,63 @@ make
 make install
 ```
 
-This will install the library in `path/lib/`. To make sure that during the compilation of N-GenIC, the library will be found, one can set 
+This will install the library in path/lib/. To make sure that during the compilation of N-GenIC, the library will be found, one can set
 
-`export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:path/lib/`
+#### 3.2 Install all required libraries
 
-### Compile N-GenIC
-To make sure that the FFTW library is found, one needs to specify in the `Makefile` inside the N-GenIC folder, the following two options, which specify the location of the previously installed FFTW library.
+The N-GenIC code needs the following libraries:
 
-```
-FFTW_INCL= -I path/include
-FFTW_LIBS= -L path/lib
-```
+* GSL
+* HDF5
+* FFTW.
 
-Then the source code can be compiled:
+On clusters, they can be loaded as modules. For example:
 
-```
-cd ngenic
-make
-```
-
-The loading of the required modules can be automated by adding the following to your ~/.bash_profile:
-
-```
-PATH=$PATH:$HOME/.local/bin:$HOME/bin
-
-export PATH
-
-module purge
-module load stack/2024-06
+```bash
 module load gcc/12.2.0
 module load openmpi/4.1.6
 module load gsl/2.7.1
 module load fftw/2.1.5
 ```
 
-## 4. Usage
+#### 3.3 Compile N-GenIC
 
-### 4.1 Switching Between Environments
-To switch from PyCosmo to N-GenIC:
+To make sure that the FFTW library is found, one needs to specify in the Makefile inside the N-GenIC folder, the following two options, which specify the location of the previously installed FFTW library.
 
 ```bash
-deactivate            # leave Python venv
-cd ../ngenic
+FFTW_INCL= -I path/include
+FFTW_LIBS= -L path/lib
+```
+
+Then the source code can be compiled:
+```bash
+cd ngenic
+make
 source setup_ngenic.sh
 ```
 
-To switch back:
+This will:
+
+* Load the appropriate GSL 2.7.1 library
+* Set <LD_LIBRARY_PATH> for N-GenIC compatibility
+
+## 4. Usage
+
+### 4.1 Generating a Power Spectrum with PyCosmo
+
+#### 4.1.1 Testing PyCosmo Power Spectrum Generation
+
+Run unit tests:
 ```bash
-cd ../PyCosmo_Power_Spectrum
-source setup_pycosmo.sh
+make test
 ```
 
-### 4.2 Generating Power Spectra with PyCosmo
+Run full test suite (clears cache, reinstalls system deps):
+```bash
+make test_full
+```
+
+#### 4.1.2 Generating a Power Spectrum
 
 To run the main script with a specific parameter file:
 ```bash
@@ -189,19 +166,7 @@ This executes:
 python -m power_spectrum_generation.custom_power_spectrum parameter_files/pycosmo_input_32.param
 ```
 
-#### 4.2.1 Testing PyCosmo Power Spectrum Generation
-
-Run unit tests:
-```bash
-make test
-```
-
-Run full test suite (clears cache, reinstalls system deps):
-```bash
-make test_full
-```
-
-#### 4.2.2 Cleaning the PyCosmo Environment 
+#### 4.1.3 Cleaning the PyCosmo Environment 
 
 Remove build artifacts, .pyc files, virtual environment:
 ```bash
@@ -213,4 +178,9 @@ To clear the sympy2c cache
 make clear_cache
 ```
 
-### 4.3 Creating initial conditions with N-GenIC
+### 4.2 Creating initial conditions with N-GenIC
+
+
+
+
+### 4.4 Switching Between Environments
