@@ -1,6 +1,3 @@
-# === System Type Selection ===
-SYSTYPE := "sem_thesis"
-
 
 # === Configuration ===
 
@@ -30,48 +27,9 @@ ifeq ($(UNAME_S),Darwin)
 	PLATFORM := mac
 endif
 
-# === GSL Configuration ===
-
-ifeq ($(SYSTYPE), "sem_thesis")
-	GSL_LIB_PATH := /cluster/software/stacks/2024-06/spack/opt/spack/linux-ubuntu22.04-x86_64_v3/gcc-12.2.0/gsl-2.7.1-y3rsoy4n2dbrmhdsghb4dmdmetvgfz7u/lib
-	GSL_INCLUDE_PATH := /cluster/software/stacks/2024-06/spack/opt/spack/linux-ubuntu22.04-x86_64_v3/gcc-12.2.0/gsl-2.7.1-y3rsoy4n2dbrmhdsghb4dmdmetvgfz7u/include
-	CC := mpicc
-	OPTIMIZE = -Wall
-	GSL_INCLUDE_PATH = /cluster/software/stacks/2024-06/spack/opt/spack/linux-ubuntu22.04-x86_64_v3/gcc-12.2.0/gsl-2.7.1-y3rsoy4n2dbrmhdsghb4dmdmetvgfz7u/include
-	GSL_LIB_PATH = /cluster/software/stacks/2024-06/spack/opt/spack/linux-ubuntu22.04-x86_64_v3/gcc-12.2.0/gsl-2.7.1-y3rsoy4n2dbrmhdsghb4dmdmetvgfz7u/lib
-	FFTW_INCL= -I ~/include
-	FFTW_LIBS= -L ~/lib
-	MPICHLIB =
-else
-	ifeq ($(PLATFORM),mac)
-		GSL_LIB_PATH := /usr/local/lib
-		GSL_INCLUDE_PATH := /usr/local/include
-	else
-		GSL_LIB_PATH := /usr/lib/x86_64-linux-gnu
-		GSL_INCLUDE_PATH := /usr/include
-	endif
-	CC := gcc
-endif
-
-# === Compiler Flags ===
-
-CFLAGS += -I$(GSL_INCLUDE_PATH)
-LDFLAGS += -L$(GSL_LIB_PATH) -lgsl -lgslcblas
-
-
-# === Environment Variables ===
-
-export CFLAGS
-export LDFLAGS
-export PYTHONPATH := $(ROOT_DIR)
-export CC
-export SYMPY2C_USE_SYSTEM_GSL := 1
-export LD_LIBRARY_PATH := $(GSL_LIB_PATH):$(LD_LIBRARY_PATH)
-
 # === Targets ===
 
-
-.PHONY: all venv setup install install_deps clear_cache test test_full run clean
+.PHONY: all venv setup install install_deps clear_cache test test_full run clean help
 
 all: setup
 
@@ -112,11 +70,11 @@ install_deps: venv
 		echo "No known package manager found. Please install GSL manually."; \
 	fi
 
+
 # One-time full setup (venv + pip + system deps)
 setup: venv install install_deps
 	@echo "Environment setup complete."
-	@echo "Reminder: If you encounter shared library issues, run:"
-	@echo "  export LD_LIBRARY_PATH=$(GSL_LIB_PATH):\$$LD_LIBRARY_PATH"
+	@echo "Reminder: Source 'setup_pycosmo.sh' before running."
 
 # Clear the sympy2c cache
 clear_cache:
@@ -149,7 +107,7 @@ run:
 		exit 1; \
 	fi
 	@echo "Running custom power spectrum generator with $(PARAM)..."
-	LD_LIBRARY_PATH=$(GSL_LIB_PATH):$$LD_LIBRARY_PATH $(VENV)/bin/python -m power_spectrum_generation.custom_power_spectrum $(PARAM)
+	$(VENV)/bin/python -m power_spectrum_generation.custom_power_spectrum $(PARAM)
 
 	@echo "Running N-GenIC with $(PARAM)..."
 	@cd .. && ../ngenic/N-GenIC $(lastword $(PARAM))
@@ -162,3 +120,10 @@ clean:
 	rm -f *.o
 	rm -rf $(VENV) __pycache__
 	find . -name "*.pyc" -delete
+
+# Help message
+help:
+	@echo "Usage:"
+	@echo "  source setup_pycosmo.sh      # set up env for PyCosmo"
+	@echo "  make run PARAM=...           # run PyCosmo + N-GenIC"
+	@echo "  make clean                   # remove venv and artifacts"
