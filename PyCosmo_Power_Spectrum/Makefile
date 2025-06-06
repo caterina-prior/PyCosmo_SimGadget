@@ -32,13 +32,16 @@ endif
 
 # === GSL Configuration ===
 
-
-# === GSL Configuration ===
-
 ifeq ($(SYSTYPE), "sem_thesis")
 	GSL_LIB_PATH := /cluster/software/stacks/2024-06/spack/opt/spack/linux-ubuntu22.04-x86_64_v3/gcc-12.2.0/gsl-2.7.1-y3rsoy4n2dbrmhdsghb4dmdmetvgfz7u/lib
 	GSL_INCLUDE_PATH := /cluster/software/stacks/2024-06/spack/opt/spack/linux-ubuntu22.04-x86_64_v3/gcc-12.2.0/gsl-2.7.1-y3rsoy4n2dbrmhdsghb4dmdmetvgfz7u/include
 	CC := mpicc
+	OPTIMIZE = -Wall
+	GSL_INCLUDE_PATH = /cluster/software/stacks/2024-06/spack/opt/spack/linux-ubuntu22.04-x86_64_v3/gcc-12.2.0/gsl-2.7.1-y3rsoy4n2dbrmhdsghb4dmdmetvgfz7u/include
+	GSL_LIB_PATH = /cluster/software/stacks/2024-06/spack/opt/spack/linux-ubuntu22.04-x86_64_v3/gcc-12.2.0/gsl-2.7.1-y3rsoy4n2dbrmhdsghb4dmdmetvgfz7u/lib
+	FFTW_INCL= -I ~/include
+	FFTW_LIBS= -L ~/lib
+	MPICHLIB =
 else
 	ifeq ($(PLATFORM),mac)
 		GSL_LIB_PATH := /usr/local/lib
@@ -146,7 +149,7 @@ run:
 		exit 1; \
 	fi
 	@echo "Running custom power spectrum generator with $(PARAM)..."
-	$(VENV)/bin/python -m power_spectrum_generation.custom_power_spectrum $(PARAM)
+	LD_LIBRARY_PATH=$(GSL_LIB_PATH):$$LD_LIBRARY_PATH $(VENV)/bin/python -m power_spectrum_generation.custom_power_spectrum $(PARAM)
 
 	@echo "Running N-GenIC with $(PARAM)..."
 	@cd .. && ../ngenic/N-GenIC $(lastword $(PARAM))
