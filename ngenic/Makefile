@@ -16,7 +16,7 @@ OPT	+=  -DNO64BITID    # switch this on if you want normal 32-bit IDs
 OPTIONS =  $(OPT)
 
 
-SYSTYPE="sem_thesis"
+SYSTYPE="Euler"
 
 
 
@@ -28,6 +28,15 @@ CC       =   mpicc        # sets the C-compiler (default)
 OPTIMIZE =   -O3 -Wall    # optimization and warning flags (default)
 MPICHLIB =  -lmpich
 
+ifeq ($(SYSTYPE),"Euler")
+CC         = mpicc
+OPTIMIZE   = -O3 -Wall
+GSL_INCL   = -I/cluster/software/stacks/2024-06/spack/opt/spack/linux-ubuntu22.04-x86_64/gcc-12.2.0/gsl-2.7.1-*/include
+GSL_LIBS   = -L/cluster/software/stacks/2024-06/spack/opt/spack/linux-ubuntu22.04-x86_64/gcc-12.2.0/gsl-2.7.1-*/lib
+FFTW_INCL = -I$(HOME)/fftw2_mpi/include
+FFTW_LIBS = -L$(HOME)/fftw2_mpi/lib
+MPICHLIB   =
+endif
 
 ifeq ($(SYSTYPE),"sem_thesis")
 CC = mpicc
@@ -157,7 +166,9 @@ ifeq ($(ID),)
 endif
 	@echo "Running N-GenIC with ID=$(ID)"
 	@./N-GenIC parameterfiles/lsf_$(ID).param
+	@echo "Finished running N-GenIC with automatically generated power spectrum"
 	@./N-GenIC parameterfiles/lsf_pycosmo_$(ID).param
+	@echo "Finished running N-GenIC with PyCosmo power spectrum input"
 
 
 .PHONY : clean

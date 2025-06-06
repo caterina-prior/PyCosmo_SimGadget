@@ -15,7 +15,7 @@ Nsample          32       % sets the maximum k that the code uses,
 Box              50000 % 7812.5   Periodic box size of simulation
 
 FileBase         lsf_32                % Base-filename of output files
-OutputDir        ./ICs/              % Directory for output
+OutputDir        ../PyCosmo_Power_Spectrum/initial_conditions              % Directory for output
 
 GlassFile        dummy_glass.dat  % File with unperturbed glass or
                                   % Cartesian grid
