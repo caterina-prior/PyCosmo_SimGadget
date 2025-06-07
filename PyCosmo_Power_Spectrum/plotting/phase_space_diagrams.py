@@ -10,38 +10,20 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(parent_dir)
 
-def plot_comparison_histograms(data1, data2, labels, units, titles, filename, num_bins):
-    fig, axs = plt.subplots(1, 2, figsize=(14, 6))
-
-    for i, (data, ax, title) in enumerate(zip([data1, data2], axs, titles)):
-        ax.hist(data, bins=num_bins, color='blue' if i == 0 else None)
-        ax.set_xlabel(rf"${labels} \ [{units[i]}]$", fontsize=14)
-        ax.set_ylabel("Frequency")
-        ax.set_title(title)
-        ax.grid(True)
-        return_integral(pd.DataFrame(data), 0, ax, num_bins)
-
-    plt.tight_layout()
-    output_dir = Path("./output_plots")
-    output_dir.mkdir(parents=True, exist_ok=True)
-    plt.savefig(output_dir / filename)
-    plt.close(fig)
-
-
-def return_integral(dataset, dataset_column, plot_axis, num_bins):
+def return_integral(series, ax, num_bins):
     """
     Calculate the integral of the histogram of a specified column in a dataset and annotate it on the plot axis.
     """
     # Calculate the integral (area under the histogram)
-    counts, bins, _ = plot_axis.hist(dataset.iloc[:, dataset_column], bins=num_bins)
+    counts, bins, _ = ax.hist(series, bins=num_bins)
     bin_width = bins[1] - bins[0]
     integral = counts.sum() * bin_width
 
     # Annotate the integral value
-    plot_axis.text(
+    ax.text(
         0.95, 0.95,
         f"Integral: {integral:.2f}",
-        transform=plot_axis.transAxes,
+        transform=ax.transAxes,
         fontsize=12,
         verticalalignment='top',
         horizontalalignment='right',
@@ -49,29 +31,46 @@ def return_integral(dataset, dataset_column, plot_axis, num_bins):
     )
     return integral
 
+def plot_comparison_histograms(ngenic_results, pycosmo_results, column_name, units, titles, filename, num_bins=100):
+    fig, axs = plt.subplots(1, 2, figsize=(14, 6))
+
+    for i, (data, ax, title) in enumerate(zip([ngenic_results, pycosmo_results], axs, titles)):
+        ax.hist(data, bins=num_bins, color='blue' if i == 0 else None)
+        ax.set_xlabel(rf"${column_name} \ [{units[i]}]$", fontsize=14)
+        ax.set_ylabel("Frequency")
+        ax.set_title(title)
+        ax.grid(True)
+        return_integral(pd.DataFrame(data), ax, num_bins)
+
+    plt.tight_layout()
+    output_dir = Path("./output_plots")
+    output_dir.mkdir(parents=True, exist_ok=True)
+    plt.savefig(output_dir / filename)
+    plt.close(fig)
+
 def plot_phase_space_diagrams(ngenic_results, pycosmo_results, num_bins=100):
     coord_labels = ['x', 'y', 'z']
     vel_labels = ['v_x', 'v_y', 'v_z']
 
-    for i, col in enumerate(coord_labels):
+    for i, column_name in enumerate(coord_labels):
         plot_comparison_histograms(
-            ngenic_results[i],
-            pycosmo_results[i],
-            col,
+            ngenic_results[column_name],
+            pycosmo_results[column_name],
+            column_name,
             units=['Mph/h', 'Mph/h'],
-            titles=[f"N-GenIC {col}-coordinates", f"PyCosmo {col}-coordinates"],
-            filename=f"{col}_coords_phase_space.png",
+            titles=[f"N-GenIC {column_name}-coordinates", f"PyCosmo {column_name}-coordinates"],
+            filename=f"{column_name}_coords_phase_space.png",
             num_bins=num_bins
         )
 
-    for i, col in enumerate(vel_labels, start=3):
+    for i, column_name in enumerate(vel_labels, start=3):
         plot_comparison_histograms(
-            ngenic_results[i],
-            pycosmo_results[i],
-            col,
+            ngenic_results[column_name],
+            pycosmo_results[column_name],
+            column_name,
             units=['cm/s', 'cm/h'],
-            titles=[f"N-GenIC {col}-values", f"PyCosmo {col}-values"],
-            filename=f"{col}_velocities_phase_space.png",
+            titles=[f"N-GenIC {column_name}-values", f"PyCosmo {column_name}-values"],
+            filename=f"{column_name}_velocities_phase_space.png",
             num_bins=num_bins
         )
 
