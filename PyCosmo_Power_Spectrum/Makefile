@@ -105,6 +105,23 @@ run:
 	@echo "Running custom power spectrum generator with $(PARAM)..."
 	$(VENV)/bin/python -m power_spectrum_generation.custom_power_spectrum $(PARAM)
 
+# Run the main script with a specified parameter file
+run:
+	@echo "Usage: make run PARAM=your_param_file.param"
+	@if [ -z "$(PARAM)" ]; then \
+		echo "Error: No parameter file specified. Use PARAM=your_param_file.param"; \
+		exit 1; \
+	fi
+	@echo "Running custom power spectrum generator with $(PARAM)..."
+	$(VENV)/bin/python -m power_spectrum_generation.custom_power_spectrum $(PARAM)
+
+phase_space:
+ifndef PARTICLES
+	$(error You must specify PARTICLES, e.g. make phase_space PARTICLES=128)
+endif
+	@echo "Generating phase space plots for $(PARTICLES) particles..."
+	python3 plot_phase_space.py $(PARTICLES)
+
 # Clean up virtual environment and bytecode
 clean:
 	@echo "Cleaning up virtual environment and Python artifacts..."

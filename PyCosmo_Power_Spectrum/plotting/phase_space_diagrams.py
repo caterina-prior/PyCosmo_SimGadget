@@ -1,20 +1,37 @@
 import sys
 import os
 from pathlib import Path
-
 import pandas as pd
 import matplotlib.pyplot as plt
+import argparse
 
 # Add the parent directory to the python path
 script_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(script_dir, '..'))
 sys.path.append(parent_dir)
 
+def plot_comparison_histograms(data1, data2, labels, units, titles, filename, num_bins):
+    fig, axs = plt.subplots(1, 2, figsize=(14, 6))
+
+    for i, (data, ax, title) in enumerate(zip([data1, data2], axs, titles)):
+        ax.hist(data, bins=num_bins, color='blue' if i == 0 else None)
+        ax.set_xlabel(rf"${labels} \ [{units[i]}]$", fontsize=14)
+        ax.set_ylabel("Frequency")
+        ax.set_title(title)
+        ax.grid(True)
+        return_integral(pd.DataFrame(data), 0, ax, num_bins)
+
+    plt.tight_layout()
+    output_dir = Path("./output_plots")
+    output_dir.mkdir(parents=True, exist_ok=True)
+    plt.savefig(output_dir / filename)
+    plt.close(fig)
+
+
 def return_integral(dataset, dataset_column, plot_axis, num_bins):
     """
     Calculate the integral of the histogram of a specified column in a dataset and annotate it on the plot axis.
     """
-
     # Calculate the integral (area under the histogram)
     counts, bins, _ = plot_axis.hist(dataset.iloc[:, dataset_column], bins=num_bins)
     bin_width = bins[1] - bins[0]
@@ -32,61 +49,56 @@ def return_integral(dataset, dataset_column, plot_axis, num_bins):
     )
     return integral
 
+def plot_phase_space_diagrams(ngenic_results, pycosmo_results, num_bins=100):
+    coord_labels = ['x', 'y', 'z']
+    vel_labels = ['v_x', 'v_y', 'v_z']
 
-def plot_phase_space_diagrams(ngenic_results, 
-                             pycosmo_results, 
-                             num_bins=100):
+    for i, col in enumerate(coord_labels):
+        plot_comparison_histograms(
+            ngenic_results[i],
+            pycosmo_results[i],
+            col,
+            units=['Mph/h', 'Mph/h'],
+            titles=[f"N-GenIC {col}-coordinates", f"PyCosmo {col}-coordinates"],
+            filename=f"{col}_coords_phase_space.png",
+            num_bins=num_bins
+        )
+
+    for i, col in enumerate(vel_labels, start=3):
+        plot_comparison_histograms(
+            ngenic_results[i],
+            pycosmo_results[i],
+            col,
+            units=['cm/s', 'cm/h'],
+            titles=[f"N-GenIC {col}-values", f"PyCosmo {col}-values"],
+            filename=f"{col}_velocities_phase_space.png",
+            num_bins=num_bins
+        )
+
+def main(particle_number):
+    input_dir = Path("./initial_conditions")
+    ngenic_path = input_dir / f"lsf_{particle_number}.csv"
+    pycosmo_path = input_dir / f"lsf_pycosmo_{particle_number}.csv"
+
+    if not ngenic_path.exists() or not pycosmo_path.exists():
+        raise FileNotFoundError(f"Expected files not found: {ngenic_path}, {pycosmo_path}")
+
+    columns = ["x", "y", "z", "v_x", "v_y", "v_z"]
+    ngenic_data = pd.read_csv(ngenic_path, header=None, names=columns)
+    pycosmo_data = pd.read_csv(pycosmo_path, header=None, names=columns)
+    plot_phase_space_diagrams(ngenic_data, pycosmo_data)
+
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description="Run the simulation with a specified number of particles.")
     
-    for column in [0, 1, 2]:
-        fig, axs = plt.subplots(1, 2, figsize=(14, 6))
+    parser.add_argument(
+        'particle_number',
+        type=str,
+        help="The number of particles in the simulation to be graphed"
+    )
+    
+    args = parser.parse_args()
 
-        column_name = ["x", "y", "z"][column]
-
-        axs[0].hist(ngenic_results.iloc[:, column], bins=num_bins, color='blue')
-        axs[0].set_xlabel(rf"${column_name} \ [Mph/h]$", fontsize=14)
-        axs[0].set_ylabel(r"Frequency")
-        axs[0].set_title(f"N-GenIC {column_name}-coordinates")
-        axs[0].grid(True)
-
-        return_integral(ngenic_results, column, axs[0], num_bins)
-
-        axs[1].hist(pycosmo_results.iloc[:, column], bins=num_bins)
-        axs[1].set_xlabel(rf"${column_name} \ [Mph/h]$", fontsize=14)
-        axs[1].set_ylabel(r"Frequency")
-        axs[1].set_title(f"PyCosmo {column_name}-coordinates")
-        axs[1].grid(True)
-
-        return_integral(pycosmo_results, column, axs[1], num_bins)
-
-        plt.tight_layout()
-        output_dir = Path("./output_plots")
-        output_dir.mkdir(parents=True, exist_ok=True)
-        plt.savefig(output_dir / f"{column_name}_coords_phase_space.png")
-        plt.close(fig)
-
-    for column in [3, 4, 5]:
-        fig, axs = plt.subplots(1, 2, figsize=(14, 6))
-
-        column_name = ["v_x", "v_y", "v_z"][column]
-
-        axs[0].hist(ngenic_results.iloc[:, column], bins=num_bins, color='blue')
-        axs[0].set_xlabel(rf"${column_name} \ [cm/s]$", fontsize=14)
-        axs[0].set_ylabel(r"Frequency")
-        axs[0].set_title(f"N-GenIC {column_name}-values")
-        axs[0].grid(True)
-
-        return_integral(ngenic_results, column, axs[0], num_bins)
-
-        axs[1].hist(pycosmo_results.iloc[:, column], bins=num_bins)
-        axs[1].set_xlabel(rf"${column_name} \ [cm/h]$", fontsize=14)
-        axs[1].set_ylabel(r"Frequency")
-        axs[1].set_title(f"PyCosmo {column_name}-values")
-        axs[1].grid(True)
-
-        return_integral(pycosmo_results, column, axs[1], num_bins)
-
-        plt.tight_layout()
-        output_dir = Path("./output_plots")
-        output_dir.mkdir(parents=True, exist_ok=True)
-        plt.savefig(output_dir / f"{column_name}_velocities_phase_space.png")
-        plt.close(fig)
+    main(args.particle_number)
