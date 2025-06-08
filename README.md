@@ -1,6 +1,6 @@
 # PyCosmo Power Spectrum Generator
 
-This repository sets up a Python-based environment for computing cosmological power spectra using a custom wrapper built on PyCosmo and GSL (GNU Scientific Library). The build is managed using make.
+This repository sets up a Python-based environment for computing cosmological power spectra using a custom wrapper built on PyCosmo. The build is managed using make.
 
 ## Project structure
 ```
@@ -35,7 +35,7 @@ PyCosmo_Power_Spectrum/
 * Python (3.9)
 * TeX Live
 
-On clusters, these can be loaded as modules. For example:
+On clusters, these can be loaded as modules. For example, on the ETH Euler Cluster:
 
 ```bash
 module load stack/2024-06
