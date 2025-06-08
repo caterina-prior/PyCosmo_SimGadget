@@ -1,6 +1,6 @@
 # PyCosmo Power Spectrum Generator
 
-This repository sets up a Python-based environment for computing cosmological power spectra using a custom wrapper built on PyCosmo and GSL (GNU Scientific Library). The build is managed using make.
+This repository sets up a Python-based environment for computing cosmological power spectra using a custom wrapper built on PyCosmo. The build is managed using make.
 
 ## Project structure
 ```
@@ -22,24 +22,7 @@ PyCosmo_Power_Spectrum/
 ├── .gitignore                     # Git ignore rules
 ├── .gitattributes                 # Git attributes config
 ```
-
-## Requirements
-* Python 3.9
-* Make
-* GSL (GNU Scientific Library)
-* System Package Manager:
-    * `apt` for Linux/WSL
-    * `brew` for macOS
-
 ## Setup Instructions
-
-This project requires two different versions of GSL:
-
-* GSL 2.8 for PyCosmo
-* GSL 2.7.1 for N-GenIC
-
-Since both versions cannot coexist easily in the same environment, two separate environment setup scripts are provided.
-
 
 ### 1. Clone the repository
 
@@ -61,13 +44,36 @@ source setup_pycosmo.sh
 
 This will:
 
-* Load the appropriate GSL 2.8 library
 * Activate the Python virtual environment
 * Set `LD_LIBRARY_PATH` correctly
 
+#### 2.2 Load System Dependencies Required for PyCosmo
+
+This project requires two different versions of GSL, thus it is important to load the system dependencies within separate virtual environments; one for N-GenIC and one for PyCosmo.
+
+Requirements for running the PyCosmo code include:
+
+* Make
+* System Package Manager:
+    * `apt` for Linux/WSL
+    * `brew` for macOS
+* GSL (2.8 for PyCosmo, 2.7.1 for N-GenIC)
+* GCC (12.2.0)
+* OpenMPI (4.1.6)
+* Python (3.9)
+* TeX Live
+
+On clusters, these can be loaded as modules. For example, on the ETH Euler Cluster:
+
+```bash
+module load stack/2024-06
+module load gcc/12.2.0
+module load openmpi/4.1.6
+module load python/3.9
+module load texlive
+```
 
 #### 2.2 Run the PyCosmo Makefile
-
 
 ```bash
 make
@@ -78,10 +84,43 @@ This will:
 
 ### 3. Set Up N-GenIC
 
-#### 3.1 Install the correct version of FFTW:
+#### 3.1 Setup the N-GenIC Virtual Environment:
+This is required to generate the Power Spectrum files which will be used as inputs in N-GenIC:
+
+```bash
+cd ngenc
+source setup_ngenic.sh
+```
+
+This will:
+
+* Activate the N-GenIC virtual environment
+* Set `LD_LIBRARY_PATH` correctly
+
+#### 3.2 Load System Dependencies Required for N-GenIC
+
+Requirements for the N-GenIC code include:
+
+* Make
+* System Package Manager:
+    * `apt` for Linux/WSL
+    * `brew` for macOS
+* GSL (2.7.1 for N-GenIC)
+* GCC (12.2.0)
+* OpenMPI (4.1.6)
+
+On clusters, these can be loaded as modules. For example, on the ETH Euler Cluster:
+
+```bash
+module load stack/2024-06
+module load gcc/12.2.0
+module load openmpi/4.1.6
+module load gsl/2.7.1
+```
+
+#### 3.3 Install the correct version of FFTW:
 
 N-GenIC requires an older version of the FFTW code, namely version 2. This version can be installed from their website. To install the library at a specific path path, one can specify this with the prefix option. Furthermore, the options shared and mpi have to be enabled. 
-
 
 ```bash
 cd ngenic
@@ -95,24 +134,7 @@ make install
 
 This will install the library in path/lib/. To make sure that during the compilation of N-GenIC, the library will be found, one can set
 
-#### 3.2 Install all required libraries
-
-The N-GenIC code needs the following libraries:
-
-* GSL
-* HDF5
-* FFTW.
-
-On clusters, they can be loaded as modules. For example:
-
-```bash
-module load gcc/12.2.0
-module load openmpi/4.1.6
-module load gsl/2.7.1
-module load fftw/2.1.5
-```
-
-#### 3.3 Compile N-GenIC
+#### 3.4 Compile N-GenIC
 
 To make sure that the FFTW library is found, one needs to specify in the Makefile inside the N-GenIC folder, the following two options, which specify the location of the previously installed FFTW library.
 
@@ -125,7 +147,6 @@ Then the source code can be compiled:
 ```bash
 cd ngenic
 make
-source setup_ngenic.sh
 ```
 
 This will:
@@ -179,7 +200,6 @@ make clear_cache
 ```
 
 ### 4.2 Creating initial conditions with N-GenIC
-
 
 
 
