@@ -24,12 +24,28 @@ PyCosmo_Power_Spectrum/
 ```
 
 ## Requirements
-* Python 3.9
 * Make
-* GSL (GNU Scientific Library)
 * System Package Manager:
     * `apt` for Linux/WSL
     * `brew` for macOS
+* GSL (GNU Scientific Library, 2.7.1)
+* GCC (12.2.0)
+* OpenMPI (4.1.6)
+* FFTW (2.1.5)
+* Python (3.9)
+* TeX Live
+
+On clusters, these can be loaded as modules. For example:
+
+```bash
+module load stack/2024-06
+module load gcc/12.2.0
+module load openmpi/4.1.6
+module load gsl/2.7.1
+module load fftw/2.1.5
+module load python/3.9
+module load texlive
+```
 
 ## Setup Instructions
 
