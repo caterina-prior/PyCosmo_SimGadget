@@ -16,7 +16,7 @@ class TestkValues(unittest.TestCase):
         # Example parameters for initializing the PowerSpectrumClass
         self.param_dictionary = {
             "Box": 100.0,
-            "Nsample": 64,
+            "Nsample": 4,
             "Redshift": 0.0,
             "Omega": 0.3,
             "OmegaLambda": 0.7,
@@ -31,25 +31,24 @@ class TestkValues(unittest.TestCase):
         }
 
         self.ps_class = PowerSpectrumClass(self.param_dictionary)
-        print(self.ps_class.k_values)  # Print the parameter dictionary for debugging
 
     def test_compute_power_spectrum_for_k_values(self):
+        # Assuming PowerSpectrumClass has 'redshift' attribute
+        a = 1. / (1 + self.ps_class.z_start)
+
         power_spectra = np.zeros(len(self.ps_class.k_values))
-        a = 1. / (1 + self.ps_class.z_start)  # Assuming PowerSpectrumClass has 'redshift' attribute
+
         i = 0
+
         for k in self.ps_class.k_values:  # Assuming PowerSpectrumClass has 'k_values' attribute
-            print(f"Trying to compute power spectrum for k = {k}")
             try:
-                pk = self.ps_class.cosmo.lin_pert.powerspec_a_k(a, k)
+                pk = self.ps_class.cosmo.lin_pert.powerspec_a_k(a, 10**k)
                 power_spectra[i] = pk
                 i += 1
-                print(f"Successfully computed for k = {k}, P(k) = {pk}")
-            except RuntimeError as e:
-                self.fail(f"RuntimeError encountered for k = {k}: {e}")
-                break # Or continue to see if more k values fail   
+            except Exception as e:
+                self.fail(f"Failed for k = {10**k}: {e}")
         
-        print("Power spectra computed for k values:", power_spectra)
-
+        print("Power spectra computed")
 
         # Add assertions to check the computed power spectra
         self.assertIsNotNone(power_spectra, "No power spectra were computed.")
