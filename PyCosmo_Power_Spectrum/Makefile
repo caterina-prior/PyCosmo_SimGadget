@@ -93,8 +93,6 @@ test_full: install_deps clear_cache
 	@set -e; \
 	PYTHON_SYMPY2C_USE_SHARED_GSL=1 $(VENV)/bin/python -m pytest tests/
 
-# TO ADD: GENERATE PHASE SPACE DIAGRAMS, SAVE IN FOLDER
-
 # Run the main script with a specified parameter file
 run:
 	@echo "Usage: make run PARAM=your_param_file.param"
