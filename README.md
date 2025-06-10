@@ -217,3 +217,27 @@ By default, two initial condition files will be generated; The binary file lsf_3
 ## 5. Generating comparison plots
 
 To generate histograms comparing the two 
+
+## 6. Switching Between Environments
+
+When you run:
+```bash
+source PyCosmo/setup_pycosmo.sh
+```
+
+You: 
+* Activate pycosmo_env
+* Set LD_LIBRARY_PATH, PATH, etc. for PyCosmo
+
+When you're done and want to switch:
+```bash
+deactivate
+source ngenic/setup_ngenic.sh
+```
+
+You:
+* Deactivate pycosmo_env
+* Activate ngenic_env
+* Replace GSL/FFTW environment variables for N-GenIC
+  
+Don't activate both environments at once. Always deactivate first.
