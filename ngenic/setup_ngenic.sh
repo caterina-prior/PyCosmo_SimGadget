@@ -29,7 +29,7 @@ export PATH=$FFTW_DIR/bin:$PATH
 # Create virtual environment if it doesn't exist
 if [ ! -d "$VENV_DIR" ]; then
     echo "[setup_ngenic.sh] Creating N-GenIC virtual environment..."
-    python3 -m venv "$VENV_DIR"
+    python3 -m venv --without-pip "$VENV_DIR"
 fi
 
 # Activate virtual environment

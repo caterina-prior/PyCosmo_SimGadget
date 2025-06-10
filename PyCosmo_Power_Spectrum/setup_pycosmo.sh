@@ -28,10 +28,20 @@ if [ -n "$GSL_DIR" ]; then
   export LD_LIBRARY_PATH="$GSL_DIR:$LD_LIBRARY_PATH"
 fi
 
-# Create virtual environment if missing
+# Check if virtual environment exists; if not, create it
 if [ ! -d "$VENV_DIR" ]; then
-  echo "[setup_pycosmo.sh] Creating PyCosmo virtual environment..."
-  python3 -m venv "$VENV_DIR"
+  echo "Virtual environment not found at $VENV_DIR"
+  echo "Creating virtual environment..."
+
+  # Create the virtual environment
+  python3 -m venv --without-pip "$VENV_DIR"
+
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to create virtual environment."
+    return 1
+  fi
+
+  echo "Virtual environment created."
 fi
 
 # Activate the virtual environment
