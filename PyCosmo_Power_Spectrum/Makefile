@@ -1,7 +1,5 @@
-
 # === Configuration ===
-
-VENV := venv
+VENV := ./venv_pycosmo
 # Parameter file configuration
 PARAM_FILE := pycosmo_input_32.param
 # Cache directory for sympy2c
@@ -35,24 +33,23 @@ all: setup
 
 # Create a virtual environment with Python 3.9
 venv:
-	@echo "Setting up virtual environment with Python 3.9..."
-	@if ! command -v python3.9 >/dev/null; then \
-		echo "python3.9 not found! Please install it."; \
+	@echo "Setting up virtual environment in $(VENV)..."
+	@if [ ! -d "$(VENV)" ]; then \
+		echo "Virtual environment not found at $(VENV)! Please create it with Python 3.9 first."; \
 		exit 1; \
 	fi
-	@if [ ! -d "$(VENV)" ]; then \
-		python3.9 -m venv $(VENV); \
-	fi
+	@echo "Ensuring pip is installed in the virtual environment..."
+	$(VENV)/bin/python -m ensurepip
 
 # Install Python dependencies
 install: venv
 	@echo "Installing Python dependencies from requirements.txt..."
-	$(VENV)/bin/pip install -r requirements.txt
+	@$(VENV)/bin/pip3 install -r requirements.txt
 
 # Install system and Python build dependencies
 install_deps: venv
 	@echo "Installing/upgrading build tools and system deps..."
-	$(VENV)/bin/pip install --upgrade pip setuptools wheel
+	$(VENV)/bin/pip3 install --upgrade pip3 setuptools wheel
 
 	@if command -v apt-get >/dev/null; then \
 		if command -v sudo >/dev/null; then \
