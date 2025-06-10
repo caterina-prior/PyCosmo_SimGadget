@@ -4,12 +4,26 @@
 # Define the virtual environment path
 VENV_DIR="$(pwd)/venv_ngenic"
 
+# User can override the base gsl dir for N-GenIC
+if [ -n "$GSL_BASE_NGENIC" ]; then
+  export GSL_DIR="$GSL_BASE_NGENIC/lib"
+# Otherwise, try to find gsl 2.7.1 folder on cluster (using wildcard)
+elif GSL_BASE_NGENIC=$(echo /cluster/project/.../gsl-2.7.1*/lib 2>/dev/null | head -n1); then
+  export GSL_DIR="$GSL_BASE_NGENIC"
+# Fallback to a common local install path if exists
+elif [ -d "$HOME/gsl-2.7.1/lib" ]; then
+  export GSL_DIR="$HOME/gsl-2.7.1/lib"
+else
+  echo "ERROR: Could not locate GSL 2.7.1 library directory. Please set GSL_BASE_NGENIC environment variable."
+  return 1  # Exit script if sourced
+fi
+
+
 # Set paths
 export FFTW_DIR=$HOME/fftw2_mpi
-export GSL_DIR=/cluster/project/.../gsl-2.7.1  # or leave unset if not needed here
 
 # Set up library and executable paths
-export LD_LIBRARY_PATH=$FFTW_DIR/lib:$GSL_DIR/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$FFTW_DIR/lib:$GSL_DIR/$LD_LIBRARY_PATH
 export PATH=$FFTW_DIR/bin:$PATH
 
 # Create virtual environment if it doesn't exist
