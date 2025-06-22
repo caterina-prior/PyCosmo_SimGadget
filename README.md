@@ -179,7 +179,7 @@ make run PARAM=path/to/your_param_file.param
 
 For example:
 ```bash
-make run PARAM=parameter_files/pycosmo_input_32.param
+make run PARAM=pycosmo_input_32.param
 ```
 
 This executes:

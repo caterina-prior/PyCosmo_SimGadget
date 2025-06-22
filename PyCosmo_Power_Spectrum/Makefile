@@ -49,7 +49,7 @@ install: venv
 # Install system and Python build dependencies
 install_deps: venv
 	@echo "Installing/upgrading build tools and system deps..."
-	$(VENV)/bin/pip3 install --upgrade pip3 setuptools wheel
+	$(VENV)/bin/python -m pip install --upgrade pip setuptools wheel
 
 	@if command -v apt-get >/dev/null; then \
 		if command -v sudo >/dev/null; then \
@@ -72,11 +72,6 @@ install_deps: venv
 setup: venv install install_deps
 	@echo "Environment setup complete."
 	@echo "Reminder: Source 'setup_pycosmo.sh' before running."
-
-# Clear the sympy2c cache
-clear_cache:
-	@echo "Clearing sympy2c cache at $(CACHE_DIR)..."
-	rm -rf $(CACHE_DIR)
 
 # Run tests (no rebuilds or cache clearing)
 test:
@@ -106,6 +101,11 @@ ifndef PARTICLES
 endif
 	@echo "Generating phase space plots for $(PARTICLES) particles..."
 	$(VENV)/bin/python plotting/phase_space_diagrams.py $(PARTICLES)
+
+# Clear the sympy2c cache
+clear_cache:
+	@echo "Clearing sympy2c cache at $(CACHE_DIR)..."
+	rm -rf $(CACHE_DIR)
 
 # Clean up virtual environment and bytecode
 clean:

@@ -1,5 +1,10 @@
-/venv
 *.csv
 *.pyc
 *.png
-/venv_pycosmo/
+*venv_ngenic/
+*venv_pycosmo/
+*venv/
+venv_ngenic/
+venv_pycosmo/
+venv/
+__pycache__/
