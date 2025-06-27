@@ -9,3 +9,5 @@ pytest
 pyarrow
 csv2parquet
 pandas
+matplotlib 
+h5py
