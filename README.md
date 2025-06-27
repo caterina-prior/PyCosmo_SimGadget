@@ -88,7 +88,8 @@ This will:
 This is required to generate the Power Spectrum files which will be used as inputs in N-GenIC:
 
 ```bash
-cd ngenc
+cd ngenic
+dos2unix setup_ngenic.sh
 source setup_ngenic.sh
 ```
 
