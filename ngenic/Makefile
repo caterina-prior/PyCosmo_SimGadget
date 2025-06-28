@@ -162,13 +162,13 @@ $(OBJS): $(INCL)
 
 run:
 ifeq ($(ID),)
-	$(error You must specify an ID, e.g. 'make run ID=32')
+        $(error You must specify an ID, e.g. 'make run ID=32')
 endif
-	@echo "Running N-GenIC with ID=$(ID)"
-	@./N-GenIC parameterfiles/lsf_$(ID).param
-	@echo "Finished running N-GenIC with automatically generated power spectrum"
-	@./N-GenIC parameterfiles/lsf_pycosmo_$(ID).param
-	@echo "Finished running N-GenIC with PyCosmo power spectrum input"
+        @echo "Running N-GenIC with ID=$(ID)"
+        @LD_LIBRARY_PATH=$(HOME)/fftw2_mpi/lib:$$LD_LIBRARY_PATH ./N-GenIC parameterfiles/lsf_$(ID).param
+        @echo "Finished running N-GenIC with automatically generated power spectrum"
+        @LD_LIBRARY_PATH=$(HOME)/fftw2_mpi/lib:$$LD_LIBRARY_PATH ./N-GenIC parameterfiles/lsf_pycosmo_$(ID).param
+        @echo "Finished running N-GenIC with PyCosmo power spectrum input"
 
 
 .PHONY : clean
