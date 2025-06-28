@@ -1,6 +1,4 @@
 import sys
-sys.path.append('/psi/home/crazzo_b/libpy')
-#print(sys.path)
 import numpy as np
 import h5py
 import matplotlib.animation as animation
@@ -9,6 +7,15 @@ mpl.use('Agg')
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy import stats
+import os
+
+# Add the parent directory to the python path
+script_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.abspath(os.path.join(script_dir, '..'))
+sys.path.append(parent_dir)
+
+# Get the file path for structure_formation_data
+structure_formation_data = os.path.join(parent_dir, "structure_formation_data")
 
 n_i = 0
 n_max = 10 # Number of frames

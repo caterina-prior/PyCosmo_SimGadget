@@ -41,11 +41,9 @@ venv:
 	@echo "Ensuring pip is installed in the virtual environment..."
 	$(VENV)/bin/python -m ensurepip
 
-# Install Python dependencies
-install: venv
 	@echo "Installing Python dependencies from requirements.txt..."
 	@$(VENV)/bin/pip3 install -r requirements.txt
-
+	
 # Install system and Python build dependencies
 install_deps: venv
 	@echo "Installing/upgrading build tools and system deps..."
