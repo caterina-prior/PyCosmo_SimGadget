@@ -89,7 +89,7 @@ ifndef PARTICLES
 	$(error You must specify PARTICLES, e.g. make phase_space PARTICLES=128)
 endif
 	@echo "Generating phase space plots for $(PARTICLES) particles..."
-	$(VENV)/bin/python plotting/phase_space_diagrams.py $(PARTICLES)
+	$(VENV)/bin/python pycosmo_plotting/phase_space_diagrams.py $(PARTICLES)
 
 # Clear sympy2c cache
 clear_cache:

@@ -9,7 +9,7 @@ base_dir = os.path.dirname(os.path.dirname(current_file_path))
 sys.path.insert(0, base_dir)  # Adds base_dir to Python path
 
 # Use matplotlib style
-style_path = os.path.join(base_dir, "plotting", "pycosmohub.mplstyle")
+style_path = os.path.join(base_dir, "pycosmo_plotting", "pycosmohub.mplstyle")
 plt.style.use(style_path)
 
 class PowerSpectrumClass:
