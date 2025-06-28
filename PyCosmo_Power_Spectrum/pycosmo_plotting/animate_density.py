@@ -11,17 +11,16 @@ import os
 
 # Add the parent directory to the python path
 script_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.abspath(os.path.join(script_dir, '..'))
-sys.path.append(parent_dir)
+sys.path.append(script_dir)
 
 # Get the file path for structure_formation_data
-structure_formation_data = os.path.join(parent_dir, "structure_formation_data")
+structure_formation_data = os.path.join(script_dir, "structure_formation_data/")
 
 n_i = 0
-n_max = 10 # Number of frames
-N = 2 # number of processors
+n_max = 1 # Number of frames
+num_processors = 1 # number of processors
 dt = (64)**(1/n_max)
-folder = "../../IPPL/ippl/build_cuda/alpine/data/lsf_256/"
+folder = structure_formation_data
 filetype = "csv"
 saving_name = "dens_animation"
 
@@ -41,19 +40,20 @@ if(filetype == "hdf5"):
         #Data = np.hstack((Data, data))
         stack.append(data)
     Data = np.stack(stack, axis = 0)
+
 elif(filetype == "csv"):
     for i in range(n_max): # go trough all timesteps
         
-        if (N == 1):
+        if (num_processors == 1):
             filename = folder + f"snapshot_{i:03d}.csv"
-            data = np.loadtxt(filename, delimiter=',', dtype=float, usecols = (0,1,2))
+            data = np.loadtxt(filename, delimiter=' ', dtype=float, usecols = (0,1,2))
             stack.append(data)
-        elif(N > 1):
+        elif(num_processors > 1):
             filename = folder + f"snapshot_0_{i:03d}.csv"
-            data = np.loadtxt(filename, delimiter=',', dtype=float, usecols = (0,1,2))
-            for j in range(1,N):
+            data = np.loadtxt(filename, delimiter=' ', dtype=float, usecols = (0,1,2))
+            for j in range(1,num_processors):
                 filename = folder + f"snapshot_{j}_{i:03d}.csv"
-                data_j = np.loadtxt(filename, delimiter=',', dtype=float, usecols = (0,1,2))
+                data_j = np.loadtxt(filename, delimiter=' ', dtype=float, usecols = (0,1,2))
                 data = np.concatenate((data, data_j), axis = 0)
             stack.append(data)
         else:
@@ -66,7 +66,7 @@ else:
 
  
 print(Data.shape)
-N = Data.shape[1]
+num_particles = Data.shape[1]
 
 class Plotting:
 
@@ -91,7 +91,7 @@ class Plotting:
         ax.xaxis.pane.fill = False
         ax.yaxis.pane.fill = False
         ax.zaxis.pane.fill = False
-        size = 32 / (N**(1./3))  
+        size = 32 / (num_particles**(1./3))  
 
         self.ax.scatter(self.data[n, :, 0], self.data[n, :, 1], self.data[n, :, 2], s=size, alpha = 0.1, color = "white")
         self.ax.set_xlim3d(0, 50000)
