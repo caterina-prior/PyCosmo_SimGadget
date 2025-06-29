@@ -30,7 +30,7 @@ OmegaLambda      0.7       % Cosmological constant (at z=0)
 OmegaBaryon      0.0       % Baryon density        (at z=0)
 HubbleParam      0.7       % Hubble paramater (may be used for power spec parameterization)
 
-Redshift         63        % Starting redshift
+Redshift         11.5        % Starting redshift
 
 Sigma8           0.9       % power spectrum normalization
 
