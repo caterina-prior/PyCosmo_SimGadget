@@ -28,8 +28,8 @@ if [ -n "$GSL_DIR" ]; then
   export LD_LIBRARY_PATH="$GSL_DIR:$LD_LIBRARY_PATH"
 fi
 
-# Create 'initial_conitions' directory if it does not exist
-INIT_DIR="$(pwd)/initial_conitions"
+# Create 'initial_conditions' directory if it does not exist
+INIT_DIR="$(pwd)/initial_conditions"
 if [ ! -d "$INIT_DIR" ]; then
   mkdir "$INIT_DIR"
 fi

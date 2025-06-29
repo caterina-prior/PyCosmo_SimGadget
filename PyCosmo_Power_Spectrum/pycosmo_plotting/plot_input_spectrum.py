@@ -2,23 +2,29 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
+"""
+This script compares the input power spectrum from N-GenIC and PyCosmo.
+It reads the power spectrum data from files, plots them on seperate graphs,
+saving the plots in a specified directory.
+"""
+
 script_dir = os.path.dirname(os.path.abspath(__file__)) if '__file__' in globals() else os.getcwd()
 parent_dir = os.path.dirname(script_dir)
 
 # Use the custom style for the plots
 plt.style.use(os.path.join(script_dir, "pycosmohub.mplstyle"))
 
-# Create 'generated plots' directory if it doesn't exist
+# Get path for the plots directory
 plots_dir = os.path.join(script_dir, 'generated_plots')
-os.makedirs(plots_dir, exist_ok=True)
 
 # Load pycosmo outputted power spectrum
-data_path = os.path.join(parent_dir, 'outputted_power_spectrum', '32_input_spectrum.txt')
-pycosmo_data = np.loadtxt(data_path, usecols=(0, 1))
+pycosmo_data_path = os.path.join(parent_dir, 'outputted_power_spectrum', '32_input_spectrum.txt')
+pycosmo_data = np.loadtxt(pycosmo_data_path, usecols=(0, 1))
 
 # Load the first two columns from 'inputspec_lsf_512.txt'
-ngenic_data = np.loadtxt('inputspec_lsf_32.txt', usecols=(0, 1))
-ngenic_data = ngenic_data[1:]
+ngenic_data_path = os.path.join(parent_dir, 'inputspec_lsf_32.txt')
+ngenic_data = np.loadtxt(ngenic_data_path, usecols=(0, 1))
+ngenic_data = ngenic_data[1:] # Remove the first row, which contains teh starting reshift and scale factor
 
 # If the file has two columns: frequency and amplitude
 if pycosmo_data.ndim == 2 and pycosmo_data.shape[1] == 2:

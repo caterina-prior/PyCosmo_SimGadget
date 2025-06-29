@@ -8,6 +8,7 @@ import argparse
 # Add the parent directory to the python path
 script_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(script_dir, '..'))
+plots_dir = os.path.join(script_dir, 'generated_plots')
 sys.path.append(parent_dir)
 
 def return_integral(series, ax, num_bins):
@@ -43,9 +44,7 @@ def plot_comparison_histograms(ngenic_results, pycosmo_results, column_name, uni
         return_integral(pd.DataFrame(data), ax, num_bins)
 
     plt.tight_layout()
-    output_dir = Path("./output_plots")
-    output_dir.mkdir(parents=True, exist_ok=True)
-    plt.savefig(output_dir / filename)
+    plt.savefig(os.path.join(plots_dir, filename))
     plt.close(fig)
 
 def plot_phase_space_diagrams(ngenic_results, pycosmo_results, num_bins=100):
