@@ -28,6 +28,12 @@ if [ -n "$GSL_DIR" ]; then
   export LD_LIBRARY_PATH="$GSL_DIR:$LD_LIBRARY_PATH"
 fi
 
+# Create 'initial_conitions' directory if it does not exist
+INIT_DIR="$(pwd)/initial_conitions"
+if [ ! -d "$INIT_DIR" ]; then
+  mkdir "$INIT_DIR"
+fi
+
 # Check if virtual environment exists; if not, create it
 if [ ! -d "$VENV_DIR" ]; then
   echo "Virtual environment not found at $VENV_DIR"
