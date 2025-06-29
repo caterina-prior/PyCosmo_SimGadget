@@ -11,3 +11,4 @@ csv2parquet
 pandas
 matplotlib 
 h5py
+ipykernel
