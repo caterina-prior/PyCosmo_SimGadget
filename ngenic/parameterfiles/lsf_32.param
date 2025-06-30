@@ -12,7 +12,7 @@ Nsample          32       % sets the maximum k that the code uses,
                            % total number of particles
  
 
-Box              64.0 % 7812.5   Periodic box size of simulation
+Box              64000.0 % 7812.5   Periodic box size of simulation
 
 FileBase         lsf_32                % Base-filename of output files
 OutputDir        ../PyCosmo_Power_Spectrum/initial_conditions              % Directory for output

@@ -173,7 +173,8 @@ class PowerSpectrumClass:
 
         k_h_Mpc = 10**(self.k_values)
 
-        delta_squared = 4 * np.pi * (k_h_Mpc)**3 * (self.pk_lin)  # Calculate the dimensionless power spectrum      
+        # Calculate the dimensionless power spectrum
+        delta_squared = 4 * np.pi * (k_h_Mpc)**3 * (self.pk_lin)
 
         log_k = np.log10(k_h_Mpc)
 

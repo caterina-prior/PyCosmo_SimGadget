@@ -22,7 +22,7 @@ pycosmo_data_path = os.path.join(parent_dir, 'outputted_power_spectrum', '32_inp
 pycosmo_data = np.loadtxt(pycosmo_data_path, usecols=(0, 1))
 
 # Load the first two columns from 'inputspec_lsf_512.txt'
-ngenic_data_path = os.path.join(parent_dir, 'inputspec_lsf_32.txt')
+ngenic_data_path = os.path.join(parent_dir, 'initial_conditions', 'inputspec_lsf_32.txt')
 ngenic_data = np.loadtxt(ngenic_data_path, usecols=(0, 1))
 ngenic_data = ngenic_data[1:] # Remove the first row, which contains teh starting reshift and scale factor
 
@@ -50,7 +50,7 @@ plt.ylabel(r'$P(k)$')
 plt.grid(True, which='both', ls='--')
 plt.legend(fontsize='small')
 plt.tight_layout()
-plt.savefig(os.path.join(plots_dir, 'input_spectrum_comparison.png'))
+plt.savefig(os.path.join(plots_dir, 'input_spectrum_comparison.pdf'))
 plt.show()
 
 # Comparison of power spectra
@@ -66,5 +66,5 @@ plt.ylabel(r'$\Delta^2$')
 plt.grid(True, which='both', ls='--')
 plt.legend(fontsize='small')
 plt.tight_layout()
-plt.savefig(os.path.join(plots_dir, 'delta_squared_comparison.png'))
+plt.savefig(os.path.join(plots_dir, 'delta_squared_comparison.pdf'))
 plt.show()
