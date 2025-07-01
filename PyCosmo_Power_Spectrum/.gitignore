@@ -1,6 +1,5 @@
 *.csv
 *.pyc
-*.png
 *venv_ngenic/
 *venv_pycosmo/
 *venv/

@@ -171,7 +171,7 @@ class PowerSpectrumClass:
 
         output_path=f"outputted_power_spectrum/{self.Nsample}_input_spectrum.txt"
 
-        k_h_Mpc = 10**(self.k_values)
+        k_h_Mpc = 10**(self.k_values) 
 
         # Calculate the dimensionless power spectrum
         delta_squared = 4 * np.pi * (k_h_Mpc)**3 * (self.pk_lin)

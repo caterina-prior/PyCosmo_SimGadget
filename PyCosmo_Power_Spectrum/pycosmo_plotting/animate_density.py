@@ -17,7 +17,7 @@ sys.path.append(script_dir)
 structure_formation_data = os.path.join(script_dir, "structure_formation_data/")
 
 n_i = 0
-n_max = 1 # Number of frames
+n_max = 9 # Number of frames
 num_processors = 1 # number of processors
 dt = (64)**(1/n_max)
 folder = structure_formation_data
@@ -45,15 +45,15 @@ elif(filetype == "csv"):
     for i in range(n_max): # go trough all timesteps
         
         if (num_processors == 1):
-            filename = folder + f"snapshot_{i:03d}.csv"
-            data = np.loadtxt(filename, delimiter=' ', dtype=float, usecols = (0,1,2))
+            filename = folder + f"snapshot_{i}00.csv"
+            data = np.loadtxt(filename, delimiter=',', dtype=float, usecols = (0,1,2))
             stack.append(data)
         elif(num_processors > 1):
             filename = folder + f"snapshot_0_{i:03d}.csv"
-            data = np.loadtxt(filename, delimiter=' ', dtype=float, usecols = (0,1,2))
+            data = np.loadtxt(filename, delimiter=',', dtype=float, usecols = (0,1,2))
             for j in range(1,num_processors):
                 filename = folder + f"snapshot_{j}_{i:03d}.csv"
-                data_j = np.loadtxt(filename, delimiter=' ', dtype=float, usecols = (0,1,2))
+                data_j = np.loadtxt(filename, delimiter=',', dtype=float, usecols = (0,1,2))
                 data = np.concatenate((data, data_j), axis = 0)
             stack.append(data)
         else:
