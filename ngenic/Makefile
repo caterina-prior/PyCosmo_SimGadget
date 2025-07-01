@@ -33,8 +33,8 @@ CC         = mpicc
 OPTIMIZE   = -O3 -Wall
 GSL_INCL   = -I/cluster/software/stacks/2024-06/spack/opt/spack/linux-ubuntu22.04-x86_64/gcc-12.2.0/gsl-2.7.1-*/include
 GSL_LIBS   = -L/cluster/software/stacks/2024-06/spack/opt/spack/linux-ubuntu22.04-x86_64/gcc-12.2.0/gsl-2.7.1-*/lib
-FFTW_INCL = -I$(HOME)/fftw2_mpi/include
-FFTW_LIBS = -L$(HOME)/fftw2_mpi/lib
+FFTW_INCL  = -I$(HOME)/fftw2_mpi/include
+FFTW_LIBS  = -L$(HOME)/fftw2_mpi/lib
 MPICHLIB   =
 endif
 
@@ -51,11 +51,11 @@ endif
 ifeq ($(SYSTYPE),"OpenSuse")
 CC       =  mpicc
 OPTIMIZE =  -Wall
-GSL_INCL =  
-GSL_LIBS =  
+GSL_INCL =
+GSL_LIBS =
 FFTW_INCL=  -I//n/hernquistfs3/fmarinacci/fftw2/include
 FFTW_LIBS=  -L/n/hernquistfs3/fmarinacci/fftw2/lib
-MPICHLIB = -L/usr/lib/mpi/gcc/openmpi/lib -Xlinker -R -Xlinker /usr/lib/mpi/gcc/openmpi/lib -lmpi 
+MPICHLIB = -L/usr/lib/mpi/gcc/openmpi/lib -Xlinker -R -Xlinker /usr/lib/mpi/gcc/openmpi/lib -lmpi
 endif
 
 ifeq ($(SYSTYPE),"Stella")
@@ -162,13 +162,13 @@ $(OBJS): $(INCL)
 
 run:
 ifeq ($(ID),)
-        $(error You must specify an ID, e.g. 'make run ID=32')
+	$(error You must specify an ID, e.g. 'make run ID=32')
 endif
-        @echo "Running N-GenIC with ID=$(ID)"
-        @LD_LIBRARY_PATH=$(HOME)/fftw2_mpi/lib:$$LD_LIBRARY_PATH ./N-GenIC parameterfiles/lsf_$(ID).param
-        @echo "Finished running N-GenIC with automatically generated power spectrum"
-        @LD_LIBRARY_PATH=$(HOME)/fftw2_mpi/lib:$$LD_LIBRARY_PATH ./N-GenIC parameterfiles/lsf_pycosmo_$(ID).param
-        @echo "Finished running N-GenIC with PyCosmo power spectrum input"
+	@echo "Running N-GenIC with ID=$(ID)"
+	@LD_LIBRARY_PATH=$(HOME)/fftw2_mpi/lib:$$LD_LIBRARY_PATH ./N-GenIC parameterfiles/lsf_$(ID).param
+	@echo "Finished running N-GenIC with automatically generated power spectrum"
+	@LD_LIBRARY_PATH=$(HOME)/fftw2_mpi/lib:$$LD_LIBRARY_PATH ./N-GenIC parameterfiles/lsf_pycosmo_$(ID).param
+	@echo "Finished running N-GenIC with PyCosmo power spectrum input"
 
 
 .PHONY : clean
