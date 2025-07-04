@@ -62,7 +62,7 @@ ReNormalizeInputSpectrum   1                % if set to zero, the
                                             % based on the specified sigma8
 
 
-ShapeGamma       0.21      % only needed for Efstathiou power spectrum 
+ShapeGamma       0.8      % only needed for Efstathiou power spectrum 
 PrimordialIndex  1.0       % may be used to tilt the primordial index, 
                            % primordial spectrum is k^PrimordialIndex
 
