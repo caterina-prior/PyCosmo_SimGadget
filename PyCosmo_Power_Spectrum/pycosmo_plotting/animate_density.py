@@ -45,7 +45,7 @@ elif(filetype == "csv"):
     for i in range(n_max): # go trough all timesteps
         
         if (num_processors == 1):
-            filename = folder + f"snapshot_{i}00.csv"
+            filename = folder + f"snapshot_0{i}0.csv"
             data = np.loadtxt(filename, delimiter=',', dtype=float, usecols = (0,1,2))
             stack.append(data)
         elif(num_processors > 1):
@@ -65,7 +65,6 @@ else:
     print("no known datatype")
 
  
-print(Data.shape)
 num_particles = Data.shape[1]
 
 class Plotting:
@@ -77,11 +76,13 @@ class Plotting:
 
     def animate2d(self, n):
         self.ax.clear()
-        self.ax.hist2d(self.data[n, :, 0], self.data[n, :, 1], bins = 300, cmap = "magma")
+        self.ax.hist2d(self.data[n, :, 0], self.data[n, :, 1], bins = 300, cmap = "magma", edgecolor='none')
         # norm=mpl.colors.LogNorm()
         #self.ax.set_title(f"a = {round(time[n], 4)}, z = {round(1/time[n],4)}")
-        self.ax.set_xlabel("Mpc")
-        self.ax.set_ylabel("Mpc")
+        self.ax.set_xlabel("Mpc", fontsize=16)
+        self.ax.set_ylabel("Mpc", fontsize=16)
+        self.ax.tick_params(axis='both', which='major', labelsize=14)
+        self.ax.grid(False)
 
 
     def animate3d(self, n):
@@ -100,8 +101,13 @@ class Plotting:
         print("Frame ", n, " was done.")
 
 
+mpl.rcParams.update({
+    "text.usetex": True,
+    "font.family": "serif",  # Or "sans-serif", or specific LaTeX font
+    "font.serif": ["Computer Modern Roman"],  # Default LaTeX font
+})
 
-fig, ax = plt.subplots(figsize=(8,8))
+fig, ax = plt.subplots(figsize=(7,7))
 picture = Plotting(fig, ax, Data)
 
 ani = animation.FuncAnimation(fig, picture.animate2d, frames = n_max - n_i, interval = 500)
@@ -124,6 +130,4 @@ ani.save(folder + saving_name + "3d.gif", writer = writer)
 plt.savefig(folder + saving_name + "3d.png")
 print("saved " + folder + saving_name + "3d.gif")
 '''
- 
-
 

@@ -36,7 +36,7 @@ def plot_comparison_histograms(ngenic_results, pycosmo_results, column_name, uni
     fig, axs = plt.subplots(1, 2, figsize=(14, 6))
 
     for i, (data, ax, title) in enumerate(zip([ngenic_results, pycosmo_results], axs, titles)):
-        ax.hist(data, bins=num_bins, color='blue' if i == 0 else None)
+        ax.hist(data, alpha=0.5, bins=num_bins, color='blue' if i == 0 else None)
         ax.set_xlabel(rf"${column_name} \ [{units[i]}]$", fontsize=14)
         ax.set_ylabel("Frequency")
         ax.set_title(title)
