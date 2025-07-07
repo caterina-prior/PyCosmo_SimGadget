@@ -6,6 +6,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy import stats
+from scipy.stats import chisquare
 import os
 
 # Add the parent directory to the python path
@@ -132,3 +133,36 @@ pycosmo_headers = ['x', 'y', 'z', 'v_x', 'v_y', 'v_z']
 pycosmo_df = pd.DataFrame(full_pycosmo_data, columns=ngenic_headers)
 
 plot_phase_space_diagrams(ngenic_df, pycosmo_df)
+
+
+def run_chi_squared_tests(ngenic_df, pycosmo_df, num_bins=100):
+    print("\nChi-squared analysis of histogram differences:\n")
+    columns = ['x', 'y', 'z', 'v_x', 'v_y', 'v_z']
+
+    for col in columns:
+        ngenic_vals = ngenic_df[col]
+        pycosmo_vals = pycosmo_df[col]
+
+        # Use common bins for both histograms
+        all_data = np.concatenate((ngenic_vals, pycosmo_vals))
+        bins = np.linspace(all_data.min(), all_data.max(), num_bins + 1)
+
+        ngenic_hist, _ = np.histogram(ngenic_vals, bins=bins)
+        pycosmo_hist, _ = np.histogram(pycosmo_vals, bins=bins)
+
+        # Mask out zero expected bins to avoid divide-by-zero
+        mask = pycosmo_hist > 0
+        obs = ngenic_hist[mask]
+        exp = pycosmo_hist[mask]
+
+        if len(obs) == 0:
+            print(f"{col}: Skipping (insufficient data in overlapping bins)")
+            continue
+
+        # Rescale expected values to match observed total (required for chisquare test)
+        exp_rescaled = exp * (obs.sum() / exp.sum())
+        chi2_stat, p_val = chisquare(f_obs=obs, f_exp=exp_rescaled)
+        print(f"{col:>4}: chi-squared = {chi2_stat:.2f}, p-value = {p_val:.4f}")
+
+# Run the chi-squared comparison
+run_chi_squared_tests(ngenic_df, pycosmo_df)

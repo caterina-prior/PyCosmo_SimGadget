@@ -159,7 +159,9 @@ def run_chi_squared_tests(ngenic_df, pycosmo_df, num_bins=100):
             print(f"{col}: Skipping (insufficient data in overlapping bins)")
             continue
 
-        chi2_stat, p_val = chisquare(f_obs=obs, f_exp=exp)
+        # Rescale expected values to match observed total (required for chisquare test)
+        exp_rescaled = exp * (obs.sum() / exp.sum())
+        chi2_stat, p_val = chisquare(f_obs=obs, f_exp=exp_rescaled)
         print(f"{col:>4}: chi-squared = {chi2_stat:.2f}, p-value = {p_val:.4f}")
 
 # Run the chi-squared comparison
