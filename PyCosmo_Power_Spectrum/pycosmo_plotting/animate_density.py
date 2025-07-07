@@ -14,7 +14,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(script_dir)
 
 # Get the file path for structure_formation_data
-structure_formation_data = os.path.join(script_dir, "structure_formation_data/")
+structure_formation_data = os.path.join(script_dir, "structure_formation_data/", "pycosmo_data/")
 
 n_i = 0
 n_max = 9 # Number of frames
