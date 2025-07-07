@@ -83,14 +83,6 @@ run:
 	@echo "Running power spectrum generator with $(PARAM)..."
 	$(VENV)/bin/python -m power_spectrum_generation.custom_power_spectrum $(PARAM)
 
-# Plot phase space diagrams
-phase_space:
-ifndef PARTICLES
-	$(error You must specify PARTICLES, e.g. make phase_space PARTICLES=128)
-endif
-	@echo "Generating phase space plots for $(PARTICLES) particles..."
-	$(VENV)/bin/python pycosmo_plotting/phase_space_diagrams.py $(PARTICLES)
-
 # Clear sympy2c cache
 clear_cache:
 	@echo "Clearing cache at $(CACHE_DIR)..."
@@ -107,6 +99,5 @@ help:
 	@echo "Usage:"
 	@echo "  make setup                # create venv and install deps"
 	@echo "  make run PARAM=...       # run PyCosmo generator"
-	@echo "  make phase_space PARTICLES=...  # generate phase space plots"
 	@echo "  make test / test_full    # run tests"
 	@echo "  make clean               # remove artifacts and venv"
