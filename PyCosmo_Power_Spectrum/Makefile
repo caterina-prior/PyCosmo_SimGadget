@@ -31,9 +31,8 @@ all: setup
 venv:
 	@echo "Setting up virtual environment in $(VENV)..."
 	@if [ ! -d "$(VENV)" ]; then \
-		python3.9 -m venv $(VENV); \
+		virtualvenv -p python3.9 $(VENV); \
 	fi
-	@$(VENV)/bin/python -m ensurepip
 
 # Install system and Python dependencies
 install_deps: venv

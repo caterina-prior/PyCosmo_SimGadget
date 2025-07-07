@@ -28,6 +28,15 @@ if [ -n "$GSL_DIR" ]; then
   export LD_LIBRARY_PATH="$GSL_DIR:$LD_LIBRARY_PATH"
 fi
 
+# Force correct libstdc++ from GCC 12.2.0
+GCC_LIB_DIR=$(dirname $(g++ -print-file-name=libstdc++.so.6))
+export LD_LIBRARY_PATH="$GCC_LIB_DIR:$LD_LIBRARY_PATH"
+
+if ! strings "$GCC_LIB_DIR/libstdc++.so.6" | grep -q GLIBCXX_3.4.29; then
+  echo "Error: GLIBCXX_3.4.29 not found in $GCC_LIB_DIR/libstdc++.so.6"
+  return 1
+fi
+
 # Create 'initial_conditions' directory if it does not exist
 INIT_DIR="$(pwd)/initial_conditions"
 if [ ! -d "$INIT_DIR" ]; then
