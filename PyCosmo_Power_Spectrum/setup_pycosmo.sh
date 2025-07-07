@@ -43,20 +43,28 @@ if [ ! -d "$INIT_DIR" ]; then
   mkdir "$INIT_DIR"
 fi
 
-# Check if virtual environment exists; if not, create it
+# Check if virtual environment exists; if not, create it using virtualenv
 if [ ! -d "$VENV_DIR" ]; then
   echo "Virtual environment not found at $VENV_DIR"
-  echo "Creating virtual environment..."
+  echo "Creating virtual environment using virtualenv..."
 
-  # Create the virtual environment
-  python3 -m venv --without-pip "$VENV_DIR"
+  # Ensure ~/.local/bin is in PATH so user-installed virtualenv is found
+  export PATH="$HOME/.local/bin:$PATH"
 
-  if [ $? -ne 0 ]; then
-    echo "Error: Failed to create virtual environment."
+  # Check if virtualenv is available
+  if ! command -v virtualenv >/dev/null 2>&1; then
+    echo "Error: virtualenv not found. Install it using 'pip install --user virtualenv'"
     return 1
   fi
 
-  echo "Virtual environment created."
+  virtualenv -p python3.9 "$VENV_DIR"
+
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to create virtual environment with virtualenv."
+    return 1
+  fi
+
+  echo "Virtual environment created with virtualenv."
 fi
 
 # Activate the virtual environment
