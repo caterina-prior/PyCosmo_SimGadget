@@ -51,11 +51,31 @@ if [ ! -d "$VENV_DIR" ]; then
   # Ensure ~/.local/bin is in PATH so user-installed virtualenv is found
   export PATH="$HOME/.local/bin:$PATH"
 
-  # Check if virtualenv is available
+  # Check if virtualenv is available; if not, try to install it
   if ! command -v virtualenv >/dev/null 2>&1; then
-    echo "Error: virtualenv not found. Install it using 'pip install --user virtualenv'"
+  echo "[setup_pycosmo.sh] 'virtualenv' not found. Attempting to install it..."
+
+  # Ensure pip is available
+  if ! command -v pip >/dev/null 2>&1; then
+    echo "Error: 'pip' is not available. Please install pip for Python 3 first."
     return 1
   fi
+
+  # Install virtualenv to user space
+  pip install --user virtualenv
+
+  # Add ~/.local/bin to PATH if not already there
+  export PATH="$HOME/.local/bin:$PATH"
+
+  # Recheck availability
+  if ! command -v virtualenv >/dev/null 2>&1; then
+    echo "Error: virtualenv installation failed or is still not in PATH."
+    return 1
+  fi
+
+  echo "[setup_pycosmo.sh] 'virtualenv' successfully installed."
+  fi
+
 
   virtualenv -p python3.9 "$VENV_DIR"
 
