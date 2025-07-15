@@ -55,14 +55,14 @@ if [ ! -d "$VENV_DIR" ]; then
   if ! command -v virtualenv >/dev/null 2>&1; then
   echo "[setup_pycosmo.sh] 'virtualenv' not found. Attempting to install it..."
 
-  # Ensure pip is available
-  if ! command -v pip >/dev/null 2>&1; then
-    echo "Error: 'pip' is not available. Please install pip for Python 3 first."
-    return 1
+  # Try installing virtualenv using Python's built-in pip module
+  if ! python3 -m ensurepip --version >/dev/null 2>&1; then
+  echo "Error: ensurepip is not available. Cannot install pip/virtualenv."
+  return 1
   fi
 
-  # Install virtualenv to user space
-  pip install --user virtualenv
+  echo "[setup_pycosmo.sh] Installing 'virtualenv' via python3 -m pip..."
+  python3 -m pip install --user virtualenv
 
   # Add ~/.local/bin to PATH if not already there
   export PATH="$HOME/.local/bin:$PATH"
