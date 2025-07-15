@@ -150,7 +150,7 @@ class PowerSpectrumClass:
         plt.legend(loc='best')
 
         # Ensure the output directory exists
-        output_dir = "output_plots"
+        output_dir = "pycosmo_plotting/generated_plots"
         os.makedirs(output_dir, exist_ok=True)
 
         # Save the plot
